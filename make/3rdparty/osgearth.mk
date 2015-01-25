@@ -92,6 +92,7 @@ ifeq ($(UNAME), Linux)
 		OSG_NAME := $(OSG_BASE_NAME)-linux-x86
 	endif
 	OSG_CMAKE_GENERATOR := "Unix Makefiles"
+	OSG_WINDOWING_SYSTEM := "X11"
 	# for some reason Qt is not added to the path in make/tools.mk
 	OSG_BUILD_PATH := $(QT_SDK_PREFIX)/bin:$(PATH)
 else ifeq ($(UNAME), Darwin)
