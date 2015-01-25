@@ -95,7 +95,10 @@ ifeq ($(UNAME), Linux)
 	# for some reason Qt is not added to the path in make/tools.mk
 	OSG_BUILD_PATH := $(QT_SDK_PREFIX)/bin:$(PATH)
 else ifeq ($(UNAME), Darwin)
-	# TODO
+	OSG_NAME := $(OSG_BASE_NAME)-clang_64
+	OSG_CMAKE_GENERATOR := "Unix Makefiles"
+	OSG_WINDOWING_SYSTEM := "Cocoa"
+	OSG_BUILD_PATH := $(QT_SDK_PREFIX)/bin:$(PATH)
 else ifeq ($(UNAME), Windows)
 	OSG_NAME := $(OSG_BASE_NAME)-$(QT_SDK_ARCH)
 	OSG_CMAKE_GENERATOR := "MinGW Makefiles"
@@ -121,6 +124,9 @@ osg:
 			-DOSG_GL3_AVAILABLE=OFF \
 			-DOSG_PLUGIN_SEARCH_INSTALL_DIR_FOR_PLUGINS=OFF \
 			-DCMAKE_PREFIX_PATH=$(BUILD_DIR)/3rdparty/osg_dependencies \
+			-DCMAKE_OSX_ARCHITECTURES="x86_64" \
+			-DOSG_WINDOWING_SYSTEM=$(OSG_WINDOWING_SYSTEM) \
+			-DCMAKE_INSTALL_NAME_DIR=@executable_path/../Plugins \
 			-DCMAKE_INSTALL_PREFIX=$(OSG_INSTALL_DIR) $(OSG_SRC_DIR) && \
 		$(MAKE) && \
 		$(MAKE) install ; \
@@ -194,7 +200,10 @@ ifeq ($(UNAME), Linux)
 	# for some reason Qt is not added to the path in make/tools.mk
 	OSGEARTH_BUILD_PATH := $(QT_SDK_PREFIX)/bin:$(OSG_INSTALL_DIR)/bin:$(PATH)
 else ifeq ($(UNAME), Darwin)
-	# TODO
+	OSGEARTH_NAME := $(OSGEARTH_BASE_NAME)-clang_64
+	OSGEARTH_CMAKE_GENERATOR := "Unix Makefiles"
+	OSG_WINDOWING_SYSTEM := "Cocoa"
+	OSGEARTH_BUILD_PATH := $(QT_SDK_PREFIX)/bin:$(OSG_INSTALL_DIR)/bin:$(PATH)
 else ifeq ($(UNAME), Windows)
 	OSGEARTH_NAME := $(OSGEARTH_BASE_NAME)-$(QT_SDK_ARCH)
 	OSGEARTH_CMAKE_GENERATOR := "MinGW Makefiles"
@@ -216,12 +225,16 @@ osgearth:
 	$(V1) ( $(CD) $(OSGEARTH_BUILD_DIR) && \
 		PATH=$(OSGEARTH_BUILD_PATH) && \
 		LD_LIBRARY_PATH=$(OSG_INSTALL_DIR)/lib && \
+		export DYLD_LIBRARY_PATH=$(OSG_INSTALL_DIR)/lib && \
 		$(CMAKE) -G $(OSGEARTH_CMAKE_GENERATOR) -DCMAKE_BUILD_TYPE=$(OSGEARTH_BUILD_CONF) \
 			-DINSTALL_TO_OSG_DIR=OFF \
 			-DOSG_DIR=$(OSG_INSTALL_DIR) \
 			-DCMAKE_INCLUDE_PATH=$(OSG_INSTALL_DIR)/include \
 			-DCMAKE_LIBRARY_PATH=$(OSG_INSTALL_DIR)/lib \
 			-DCMAKE_PREFIX_PATH=$(BUILD_DIR)/3rdparty/osg_dependencies \
+			-DCMAKE_OSX_ARCHITECTURES="x86_64" \
+			-DOSG_WINDOWING_SYSTEM=$(OSG_WINDOWING_SYSTEM) \
+			-DCMAKE_INSTALL_NAME_DIR=@executable_path/../Plugins \
 			-DCMAKE_INSTALL_PREFIX=$(OSGEARTH_INSTALL_DIR) $(OSGEARTH_SRC_DIR) && \
 		$(MAKE) && \
 		$(MAKE) install ; \
