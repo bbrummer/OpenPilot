@@ -174,6 +174,17 @@ Item {
     // Start Drawing
 
     //
+    // Animation properties
+    //
+
+    property double offset_value: close_bg.width * 0.85
+
+    property int anim_type: Easing.InOutExpo //Easing.InOutSine Easing.InOutElastic
+    property real anim_amplitude: 1.2
+    property real anim_period: 2
+    property int duration_value: 1600
+
+    //
     // Close - Open panel
     //
 
@@ -183,16 +194,17 @@ Item {
         sceneSize: panels.sceneSize
         y: Math.floor(scaledBounds.y * sceneItem.height)
 
+
         states: State {
              name: "fading"
              when: show_panels == true
-             PropertyChanges { target: close_bg; x: Math.floor(scaledBounds.x * sceneItem.width) + (close_bg.width * 0.85); }
+             PropertyChanges { target: close_bg; x: Math.floor(scaledBounds.x * sceneItem.width) + offset_value; }
         }
 
         transitions: Transition {
         SequentialAnimation {
               id: close_anim
-              PropertyAnimation { property: "x"; duration: 800 }
+              PropertyAnimation { property: "x"; easing.type: anim_type; easing.amplitude: anim_amplitude; easing.period: anim_period;  duration: duration_value }
               }
         }
     }
@@ -208,12 +220,14 @@ Item {
         states: State {
              name: "fading"
              when: show_panels == true
-             PropertyChanges { target: panel_open_icon; x: Math.floor(scaledBounds.x * sceneItem.width) + (close_bg.width * 0.85); }
+             PropertyChanges { target: panel_open_icon; x: Math.floor(scaledBounds.x * sceneItem.width) + offset_value; }
+             PropertyChanges { target: panel_open_icon; opacity: 0; }
         }
 
         transitions: Transition {
         SequentialAnimation {
-              PropertyAnimation { property: "x"; duration: 800 }
+              PropertyAnimation { property: "x"; easing.type: anim_type; easing.amplitude: anim_amplitude; easing.period: anim_period;  duration: duration_value }
+              PropertyAnimation { property: "opacity"; duration: 500; }
               }
         }
     }
@@ -235,12 +249,12 @@ Item {
         states: State {
              name: "fading"
              when: show_panels == true
-             PropertyChanges { target: close_mousearea; x: Math.floor(scaledBounds.x * sceneItem.width) + (close_bg.width * 0.85); }
+             PropertyChanges { target: close_mousearea; x: Math.floor(scaledBounds.x * sceneItem.width) + offset_value; }
         }
 
         transitions: Transition {
             SequentialAnimation {
-                PropertyAnimation { property: "x"; duration: 800 }
+                PropertyAnimation { property: "x"; easing.type: anim_type; easing.amplitude: anim_amplitude; easing.period: anim_period;  duration: duration_value }
             }
         }
     }
@@ -259,13 +273,13 @@ Item {
         states: State {
              name: "fading"
              when: show_panels == true
-             PropertyChanges { target: rc_input_bg; x: Math.floor(scaledBounds.x * sceneItem.width) + (rc_input_bg.width * 0.85); }
+             PropertyChanges { target: rc_input_bg; x: Math.floor(scaledBounds.x * sceneItem.width) + offset_value; }
         }
 
         transitions: Transition {
             SequentialAnimation {
                 id: rc_input_anim
-                PropertyAnimation { property: "x"; duration: 800 }
+                PropertyAnimation { property: "x"; easing.type: anim_type; easing.amplitude: anim_amplitude; easing.period: anim_period;  duration: duration_value }
             }
         }
     }
@@ -280,12 +294,12 @@ Item {
         states: State {
              name: "fading"
              when: show_panels == true
-             PropertyChanges { target: rc_input_labels; x: Math.floor(scaledBounds.x * sceneItem.width) + (rc_input_bg.width * 0.85); }
+             PropertyChanges { target: rc_input_labels; x: Math.floor(scaledBounds.x * sceneItem.width) + offset_value; }
         }
 
         transitions: Transition {
         SequentialAnimation {
-              PropertyAnimation { property: "x"; duration: 800 }
+              PropertyAnimation { property: "x"; easing.type: anim_type; easing.amplitude: anim_amplitude; easing.period: anim_period;  duration: duration_value }
               }
         }
     }
@@ -307,12 +321,12 @@ Item {
         states: State {
              name: "fading"
              when: show_panels == true
-             PropertyChanges { target: rc_input_mousearea; x: Math.floor(scaledBounds.x * sceneItem.width) + (rc_input_bg.width * 0.85); }
+             PropertyChanges { target: rc_input_mousearea; x: Math.floor(scaledBounds.x * sceneItem.width) + offset_value; }
         }
 
         transitions: Transition {
         SequentialAnimation {
-              PropertyAnimation { property: "x"; duration: 800 }
+              PropertyAnimation { property: "x"; easing.type: anim_type; easing.amplitude: anim_amplitude; easing.period: anim_period;  duration: duration_value }
               }
         }
     }
@@ -334,12 +348,12 @@ Item {
         states: State {
              name: "fading"
              when: show_panels == true
-             PropertyChanges { target: rc_throttle; x: Math.floor(scaledBounds.x * sceneItem.width) + (rc_input_bg.width * 0.85); }
+             PropertyChanges { target: rc_throttle; x: Math.floor(scaledBounds.x * sceneItem.width) + offset_value; }
         }
 
         transitions: Transition {
         SequentialAnimation {
-              PropertyAnimation { property: "x"; duration: 800 }
+              PropertyAnimation { property: "x"; easing.type: anim_type; easing.amplitude: anim_amplitude; easing.period: anim_period;  duration: duration_value }
               }
         }
     }
@@ -368,12 +382,12 @@ Item {
         states: State {
              name: "fading"
              when: show_panels == true
-             PropertyChanges { target: rc_stick; x: Math.floor(scaledBounds.x * sceneItem.width) + (rc_input_bg.width * 0.85); }
+             PropertyChanges { target: rc_stick; x: Math.floor(scaledBounds.x * sceneItem.width) + offset_value; }
         }
 
         transitions: Transition {
         SequentialAnimation {
-              PropertyAnimation { property: "x"; duration: 800 }
+              PropertyAnimation { property: "x"; easing.type: anim_type; easing.amplitude: anim_amplitude; easing.period: anim_period;  duration: duration_value }
               }
         }
     }
@@ -392,12 +406,12 @@ Item {
         states: State {
              name: "fading"
              when: show_panels == true
-             PropertyChanges { target: battery_bg; x: Math.floor(scaledBounds.x * sceneItem.width) + (battery_bg.width * 0.85); }
+             PropertyChanges { target: battery_bg; x: Math.floor(scaledBounds.x * sceneItem.width) + offset_value; }
         }
 
         transitions: Transition {
         SequentialAnimation {
-              PropertyAnimation { property: "x"; duration: 800 }
+              PropertyAnimation { property: "x"; easing.type: anim_type; easing.amplitude: anim_amplitude; easing.period: anim_period;  duration: duration_value }
               }
         }
     }
@@ -415,12 +429,12 @@ Item {
         states: State {
              name: "fading"
              when: show_panels == true
-             PropertyChanges { target: battery_volt; x: Math.floor(scaledBounds.x * sceneItem.width) + (battery_bg.width * 0.85); }
+             PropertyChanges { target: battery_volt; x: Math.floor(scaledBounds.x * sceneItem.width) + offset_value; }
         }
 
         transitions: Transition {
             SequentialAnimation {
-                PropertyAnimation { property: "x"; duration: 800 }
+                PropertyAnimation { property: "x"; easing.type: anim_type; easing.amplitude: anim_amplitude; easing.period: anim_period;  duration: duration_value }
             }
         }
 
@@ -456,12 +470,12 @@ Item {
         states: State {
              name: "fading"
              when: show_panels == true
-             PropertyChanges { target: battery_amp; x: Math.floor(scaledBounds.x * sceneItem.width) + (battery_bg.width * 0.85); }
+             PropertyChanges { target: battery_amp; x: Math.floor(scaledBounds.x * sceneItem.width) + offset_value; }
         }
 
         transitions: Transition {
             SequentialAnimation {
-                PropertyAnimation { property: "x"; duration: 800 }
+                PropertyAnimation { property: "x"; easing.type: anim_type; easing.amplitude: anim_amplitude; easing.period: anim_period;  duration: duration_value }
             }
         }
 
@@ -497,12 +511,12 @@ Item {
         states: State {
              name: "fading"
              when: show_panels == true
-             PropertyChanges { target: battery_milliamp; x: Math.floor(scaledBounds.x * sceneItem.width) + (battery_bg.width * 0.85); }
+             PropertyChanges { target: battery_milliamp; x: Math.floor(scaledBounds.x * sceneItem.width) + offset_value; }
         }
 
         transitions: Transition {
             SequentialAnimation {
-                PropertyAnimation { property: "x"; duration: 800 }
+                PropertyAnimation { property: "x"; easing.type: anim_type; easing.amplitude: anim_amplitude; easing.period: anim_period;  duration: duration_value }
             }
         }
 
@@ -542,12 +556,12 @@ Item {
         states: State {
              name: "fading"
              when: show_panels == true
-             PropertyChanges { target: battery_estimated_flight_time; x: Math.floor(scaledBounds.x * sceneItem.width) + (battery_bg.width * 0.85); }
+             PropertyChanges { target: battery_estimated_flight_time; x: Math.floor(scaledBounds.x * sceneItem.width) + offset_value; }
         }
 
         transitions: Transition {
             SequentialAnimation {
-                PropertyAnimation { property: "x"; duration: 800 }
+                PropertyAnimation { property: "x"; easing.type: anim_type; easing.amplitude: anim_amplitude; easing.period: anim_period;  duration: duration_value }
             }
         }
 
@@ -585,12 +599,12 @@ Item {
         states: State {
              name: "fading"
              when: show_panels == true
-             PropertyChanges { target: battery_labels; x: Math.floor(scaledBounds.x * sceneItem.width) + (battery_bg.width * 0.85); }
+             PropertyChanges { target: battery_labels; x: Math.floor(scaledBounds.x * sceneItem.width) + offset_value; }
         }
 
         transitions: Transition {
             SequentialAnimation {
-                PropertyAnimation { property: "x"; duration: 800 }
+                PropertyAnimation { property: "x"; easing.type: anim_type; easing.amplitude: anim_amplitude; easing.period: anim_period;  duration: duration_value }
             }
         }
     }
@@ -612,12 +626,12 @@ Item {
         states: State {
              name: "fading"
              when: show_panels == true
-             PropertyChanges { target: battery_mousearea; x: Math.floor(scaledBounds.x * sceneItem.width) + (battery_bg.width * 0.85); }
+             PropertyChanges { target: battery_mousearea; x: Math.floor(scaledBounds.x * sceneItem.width) + offset_value; }
         }
 
         transitions: Transition {
             SequentialAnimation {
-                PropertyAnimation { property: "x"; duration: 800 }
+                PropertyAnimation { property: "x"; easing.type: anim_type; easing.amplitude: anim_amplitude; easing.period: anim_period;  duration: duration_value }
             }
         }
     }
@@ -636,12 +650,12 @@ Item {
         states: State {
              name: "fading"
              when: show_panels == true
-             PropertyChanges { target: oplm_bg; x: Math.floor(scaledBounds.x * sceneItem.width) + (oplm_bg.width * 0.85); }
+             PropertyChanges { target: oplm_bg; x: Math.floor(scaledBounds.x * sceneItem.width) + offset_value; }
         }
 
         transitions: Transition {
         SequentialAnimation {
-              PropertyAnimation { property: "x"; duration: 800 }
+              PropertyAnimation { property: "x"; easing.type: anim_type; easing.amplitude: anim_amplitude; easing.period: anim_period;  duration: duration_value }
               }
         }
     }
@@ -656,12 +670,12 @@ Item {
         states: State {
              name: "fading"
              when: show_panels == true
-             PropertyChanges { target: smeter_bg; x: Math.floor(scaledBounds.x * sceneItem.width) + (oplm_bg.width * 0.85); }
+             PropertyChanges { target: smeter_bg; x: Math.floor(scaledBounds.x * sceneItem.width) + offset_value; }
         }
 
         transitions: Transition {
             SequentialAnimation {
-                PropertyAnimation { property: "x"; duration: 800 }
+                PropertyAnimation { property: "x"; easing.type: anim_type; easing.amplitude: anim_amplitude; easing.period: anim_period;  duration: duration_value }
             }
         }
     }
@@ -676,12 +690,12 @@ Item {
         states: State {
              name: "fading"
              when: show_panels == true
-             PropertyChanges { target: smeter_scale; x: Math.floor(scaledBounds.x * sceneItem.width) + (oplm_bg.width * 0.85); }
+             PropertyChanges { target: smeter_scale; x: Math.floor(scaledBounds.x * sceneItem.width) + offset_value; }
         }
 
         transitions: Transition {
             SequentialAnimation {
-                PropertyAnimation { property: "x"; duration: 800 }
+                PropertyAnimation { property: "x"; easing.type: anim_type; easing.amplitude: anim_amplitude; easing.period: anim_period;  duration: duration_value }
             }
         }
     }
@@ -696,12 +710,12 @@ Item {
         states: State {
              name: "fading"
              when: show_panels == true
-             PropertyChanges { target: smeter_needle; x: Math.floor(scaledBounds.x * sceneItem.width) + (oplm_bg.width * 0.85); }
+             PropertyChanges { target: smeter_needle; x: Math.floor(scaledBounds.x * sceneItem.width) + offset_value; }
         }
 
         transitions: Transition {
             SequentialAnimation {
-                PropertyAnimation { property: "x"; duration: 800 }
+                PropertyAnimation { property: "x"; easing.type: anim_type; easing.amplitude: anim_amplitude; easing.period: anim_period;  duration: duration_value }
             }
         }
 
@@ -715,18 +729,21 @@ Item {
         id: smeter_mask
         elementName: "smeter-mask"
         sceneSize: panels.sceneSize
-        y: Math.floor(scaledBounds.y * sceneItem.height)
+        //y: Math.floor(scaledBounds.y * sceneItem.height)
+        width: smeter_scale.width * 1.09
+        //anchors.horizontalCenter: smeter_scale
+
         z: oplm_bg.z+4
 
         states: State {
              name: "fading"
              when: show_panels == true
-             PropertyChanges { target: smeter_mask; x: Math.floor(scaledBounds.x * sceneItem.width) + (oplm_bg.width * 0.85); }
+             PropertyChanges { target: smeter_mask; x: Math.floor(scaledBounds.x * sceneItem.width) + offset_value; }
         }
 
         transitions: Transition {
             SequentialAnimation {
-                PropertyAnimation { property: "x"; duration: 800 }
+                PropertyAnimation { property: "x"; easing.type: anim_type; easing.amplitude: anim_amplitude; easing.period: anim_period;  duration: duration_value }
             }
         }
     }
@@ -736,17 +753,19 @@ Item {
         elementName: "oplm-button-bg"
         sceneSize: panels.sceneSize
         y: Math.floor(scaledBounds.y * sceneItem.height)
+        width: smeter_mask.width
+
         z: oplm_bg.z+5
 
         states: State {
              name: "fading"
              when: show_panels == true
-             PropertyChanges { target: oplm_button_bg; x: Math.floor(scaledBounds.x * sceneItem.width) + (oplm_bg.width * 0.85); }
+             PropertyChanges { target: oplm_button_bg; x: Math.floor(scaledBounds.x * sceneItem.width) + offset_value; }
         }
 
         transitions: Transition {
             SequentialAnimation {
-                PropertyAnimation { property: "x"; duration: 800 }
+                PropertyAnimation { property: "x"; easing.type: anim_type; easing.amplitude: anim_amplitude; easing.period: anim_period;  duration: duration_value }
             }
         }
     }
@@ -785,12 +804,12 @@ Item {
             states: State {
                  name: "fading"
                  when: show_panels == true
-                 PropertyChanges { target: idButton_oplm; x: Math.floor(scaledBounds.x * sceneItem.width) + (oplm_bg.width * 0.85); }
+                 PropertyChanges { target: idButton_oplm; x: Math.floor(scaledBounds.x * sceneItem.width) + offset_value; }
             }
 
             transitions: Transition {
                 SequentialAnimation {
-                    PropertyAnimation { property: "x"; duration: 800 }
+                    PropertyAnimation { property: "x"; easing.type: anim_type; easing.amplitude: anim_amplitude; easing.period: anim_period;  duration: duration_value }
                 }
             }
         }
@@ -806,12 +825,12 @@ Item {
         states: State {
              name: "fading"
              when: show_panels == true
-             PropertyChanges { target: oplm_id_label; x: Math.floor(scaledBounds.x * sceneItem.width) + (oplm_bg.width * 0.85); }
+             PropertyChanges { target: oplm_id_label; x: Math.floor(scaledBounds.x * sceneItem.width) + offset_value; }
         }
 
         transitions: Transition {
             SequentialAnimation {
-                PropertyAnimation { property: "x"; duration: 800 }
+                PropertyAnimation { property: "x"; easing.type: anim_type; easing.amplitude: anim_amplitude; easing.period: anim_period;  duration: duration_value }
             }
         }
     }
@@ -829,12 +848,12 @@ Item {
         states: State {
              name: "fading"
              when: show_panels == true
-             PropertyChanges { target: oplm_id_text; x: Math.floor(scaledBounds.x * sceneItem.width) + (oplm_bg.width * 0.85); }
+             PropertyChanges { target: oplm_id_text; x: Math.floor(scaledBounds.x * sceneItem.width) + offset_value; }
         }
 
         transitions: Transition {
             SequentialAnimation {
-                PropertyAnimation { property: "x"; duration: 800 }
+                PropertyAnimation { property: "x"; easing.type: anim_type; easing.amplitude: anim_amplitude; easing.period: anim_period;  duration: duration_value }
             }
         }
 
@@ -868,12 +887,12 @@ Item {
         states: State {
              name: "fading"
              when: show_panels == true
-             PropertyChanges { target: oplm_mousearea; x: Math.floor(scaledBounds.x * sceneItem.width) + (oplm_bg.width * 0.85); }
+             PropertyChanges { target: oplm_mousearea; x: Math.floor(scaledBounds.x * sceneItem.width) + offset_value; }
         }
 
         transitions: Transition {
             SequentialAnimation {
-                PropertyAnimation { property: "x"; duration: 800 }
+                PropertyAnimation { property: "x"; easing.type: anim_type; easing.amplitude: anim_amplitude; easing.period: anim_period;  duration: duration_value }
             }
         }
     }
@@ -892,13 +911,13 @@ Item {
         states: State {
              name: "fading"
              when: show_panels == true
-             PropertyChanges { target: system_bg; x: Math.floor(scaledBounds.x * sceneItem.width) + (system_bg.width * 0.85); }
+             PropertyChanges { target: system_bg; x: Math.floor(scaledBounds.x * sceneItem.width) + offset_value; }
         }
 
         transitions: Transition {
             SequentialAnimation {
                 id: system_anim
-                PropertyAnimation { property: "x"; duration: 800 }
+                PropertyAnimation { property: "x"; easing.type: anim_type; easing.amplitude: anim_amplitude; easing.period: anim_period;  duration: duration_value }
             }
         }
     }
@@ -913,12 +932,12 @@ Item {
         states: State {
              name: "fading"
              when: show_panels == true
-             PropertyChanges { target: system_frametype; x: Math.floor(scaledBounds.x * sceneItem.width) + (system_bg.width * 0.85); }
+             PropertyChanges { target: system_frametype; x: Math.floor(scaledBounds.x * sceneItem.width) + offset_value; }
         }
 
         transitions: Transition {
             SequentialAnimation {
-                PropertyAnimation { property: "x"; duration: 800 }
+                PropertyAnimation { property: "x"; easing.type: anim_type; easing.amplitude: anim_amplitude; easing.period: anim_period;  duration: duration_value }
             }
         }
 
@@ -946,12 +965,12 @@ Item {
         states: State {
              name: "fading"
              when: show_panels == true
-             PropertyChanges { target: system_cpuloadtemp; x: Math.floor(scaledBounds.x * sceneItem.width) + (system_bg.width * 0.85); }
+             PropertyChanges { target: system_cpuloadtemp; x: Math.floor(scaledBounds.x * sceneItem.width) + offset_value; }
         }
 
         transitions: Transition {
             SequentialAnimation {
-                PropertyAnimation { property: "x"; duration: 800 }
+                PropertyAnimation { property: "x"; easing.type: anim_type; easing.amplitude: anim_amplitude; easing.period: anim_period;  duration: duration_value }
             }
         }
 
@@ -979,12 +998,12 @@ Item {
         states: State {
              name: "fading"
              when: show_panels == true
-             PropertyChanges { target: system_memfree; x: Math.floor(scaledBounds.x * sceneItem.width) + (system_bg.width * 0.85); }
+             PropertyChanges { target: system_memfree; x: Math.floor(scaledBounds.x * sceneItem.width) + offset_value; }
         }
 
         transitions: Transition {
             SequentialAnimation {
-                PropertyAnimation { property: "x"; duration: 800 }
+                PropertyAnimation { property: "x"; easing.type: anim_type; easing.amplitude: anim_amplitude; easing.period: anim_period;  duration: duration_value }
             }
         }
 
@@ -1010,12 +1029,12 @@ Item {
         states: State {
              name: "fading"
              when: show_panels == true
-             PropertyChanges { target: system_fusion_algo; x: Math.floor(scaledBounds.x * sceneItem.width) + (system_bg.width * 0.85); }
+             PropertyChanges { target: system_fusion_algo; x: Math.floor(scaledBounds.x * sceneItem.width) + offset_value; }
         }
 
         transitions: Transition {
             SequentialAnimation {
-                PropertyAnimation { property: "x"; duration: 800 }
+                PropertyAnimation { property: "x"; easing.type: anim_type; easing.amplitude: anim_amplitude; easing.period: anim_period;  duration: duration_value }
             }
         }
 
@@ -1041,12 +1060,12 @@ Item {
         states: State {
              name: "fading"
              when: show_panels == true
-             PropertyChanges { target: system_mag_used; x: Math.floor(scaledBounds.x * sceneItem.width) + (system_bg.width * 0.85); }
+             PropertyChanges { target: system_mag_used; x: Math.floor(scaledBounds.x * sceneItem.width) + offset_value; }
         }
 
         transitions: Transition {
             SequentialAnimation {
-                PropertyAnimation { property: "x"; duration: 800 }
+                PropertyAnimation { property: "x"; easing.type: anim_type; easing.amplitude: anim_amplitude; easing.period: anim_period;  duration: duration_value }
             }
         }
 
@@ -1072,12 +1091,12 @@ Item {
         states: State {
              name: "fading"
              when: show_panels == true
-             PropertyChanges { target: system_gpstype; x: Math.floor(scaledBounds.x * sceneItem.width) + (system_bg.width * 0.85); }
+             PropertyChanges { target: system_gpstype; x: Math.floor(scaledBounds.x * sceneItem.width) + offset_value; }
         }
 
         transitions: Transition {
             SequentialAnimation {
-                PropertyAnimation { property: "x"; duration: 800 }
+                PropertyAnimation { property: "x"; easing.type: anim_type; easing.amplitude: anim_amplitude; easing.period: anim_period;  duration: duration_value }
             }
         }
 
@@ -1110,12 +1129,12 @@ Item {
         states: State {
              name: "fading"
              when: show_panels == true
-             PropertyChanges { target: system_mousearea; x: Math.floor(scaledBounds.x * sceneItem.width) + (system_bg.width * 0.85); }
+             PropertyChanges { target: system_mousearea; x: Math.floor(scaledBounds.x * sceneItem.width) + offset_value; }
         }
 
         transitions: Transition {
             SequentialAnimation {
-                PropertyAnimation { property: "x"; duration: 800 }
+                PropertyAnimation { property: "x"; easing.type: anim_type; easing.amplitude: anim_amplitude; easing.period: anim_period;  duration: duration_value }
             }
         }
     }
