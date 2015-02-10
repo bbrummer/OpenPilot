@@ -7,7 +7,6 @@
 #include <osg/Node>
 #include <osgViewer/CompositeViewer>
 #include <osgViewer/ViewerEventHandlers>
-#include <osgUtil/Optimizer>
 #include <osgGA/StateSetManipulator>
 
 #include <osgEarth/MapNode>
@@ -53,10 +52,9 @@ public:
                 h->initCompositeViewer();
                 h->self->realize();
                 h->camera->installCamera(h->view.get());
+                h->camera->setViewport(0, 0, item->width(), item->height());
                 h->realized = true;
             }
-            // TODO don't do that for each frame!
-            h->camera->setViewport(h->view->getCamera(), 0, 0, item->width(), item->height());
             // TODO scene update should be done here
         }
 
@@ -107,11 +105,14 @@ private:
     {
         qDebug() << "OSGViewport - quickItem" << self;
         view = new osgViewer::View();
+
         // TODO will the handlers be destroyed???
-        view->addEventHandler(new osgViewer::StatsHandler());
+        // add the state manipulator
+        view->addEventHandler(new osgGA::StateSetManipulator(view->getCamera()->getOrCreateStateSet()));
         // b : Toggle Backface Culling, l : Toggle Lighting, t : Toggle Texturing, w : Cycle Polygon Mode
-        view->addEventHandler(new osgGA::StateSetManipulator());
-        // viewer->addEventHandler(new osgViewer::ThreadingHandler());
+
+        // add the stats handler
+        view->addEventHandler(new osgViewer::StatsHandler);
     }
 
     ~Hidden()
@@ -178,10 +179,6 @@ private:
             view->setSceneData(NULL);
             return true;
         }
-
-        // expose option to turn optimizer on/off
-        // osgUtil::Optimizer optimizer;
-        // optimizer.optimize(node);
 
         // TODO map handling should not be done here
         osgEarth::MapNode *mapNode = osgEarth::MapNode::findMapNode(node);

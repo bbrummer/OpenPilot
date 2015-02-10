@@ -434,9 +434,9 @@ void OSGCamera::installCamera(osgViewer::View *view)
     }
 }
 
-void OSGCamera::setViewport(osg::Camera *camera, int x, int y, int width, int height)
+void OSGCamera::setViewport(int x, int y, int width, int height)
 {
-    // qDebug() << "OSGCamera - setViewport" << camera << x << y << width << "x" << heigth;
+    // qDebug() << "OSGCamera - setViewport" << x << y << width << "x" << heigth;
     if (width <= 0 || height <= 0) {
         qWarning() << "OSGCamera - setViewport - invalid size " << width << "x" << height;
         return;
@@ -446,8 +446,7 @@ void OSGCamera::setViewport(osg::Camera *camera, int x, int y, int width, int he
         h->y      = y;
         h->width  = width;
         h->height = height;
-        // h->cameraSizeDirty = true;
-        h->updateCameraSize();
+        h->cameraSizeDirty = true;
     }
 }
 

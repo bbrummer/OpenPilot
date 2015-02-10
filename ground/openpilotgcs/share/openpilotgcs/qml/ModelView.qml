@@ -10,8 +10,8 @@ OSGViewport {
     //opacity: 0.999
     updateMode: OSGViewport.Discrete
     logarithmicDepthBuffer: true
-    camera: camera
     sceneData: skyNode
+    camera: camera
 
     OSGSkyNode {
         id: skyNode
@@ -92,6 +92,7 @@ OSGViewport {
         id: modelFileNode
         source: qmlWidget.modelFile
         async: false
+        optimizeMode: OSGNodeFile.OptimizeAndCheck
     }
 
     OSGCamera {
