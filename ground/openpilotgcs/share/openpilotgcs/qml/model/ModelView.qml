@@ -5,24 +5,20 @@ import PfdQmlEnums 1.0
 OSGViewport {
     anchors.fill: parent
     focus: true
-    sceneData: skyNode
+    sceneData: fileNode
     camera: camera
 
-    OSGSkyNode {
-        id: skyNode
-        sceneData: terrainNode
-        dateTime: new Date();
-    }
-
     OSGNodeFile {
-        id: terrainNode
-        source: qmlWidget.terrainFile
+        id: fileNode
+        source: qmlWidget.modelFile
         async: false
+        optimizeMode: OSGNodeFile.OptimizeAndCheck
     }
 
     OSGCamera {
         id: camera
         fieldOfView: 90
-        manipulatorMode: OSGCamera.Earth
+        //manipulatorMode: OSGCamera.Track
+        //trackNode: fileNode
     }
 }
