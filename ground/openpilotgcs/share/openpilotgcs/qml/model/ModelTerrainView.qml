@@ -12,31 +12,24 @@ OSGViewport {
     OSGSkyNode {
         id: skyNode
         sceneData: terrainNode
-        sunLightEnabled: true
         dateTime: new Date();
     }
 
-    OSGNodeFile {
+    OSGFileNode {
         id: terrainNode
         source: qmlWidget.terrainFile
         async: false
-        optimizeMode: OSGNodeFile.OptimizeAndCheck
+        optimizeMode: OSGFileNode.OptimizeAndCheck
     }
 
     OSGModelNode {
         id: modelNode
         modelData: modelGroup
         sceneData: terrainNode
-
-        yaw: AttitudeState.Yaw
-        pitch: AttitudeState.Pitch
-        roll: AttitudeState.Roll
-
-        latitude: lat()
-        longitude: lon()
-        altitude: alt()
-
         clampToTerrain: true
+
+        attitude: Qt.vector3d(AttitudeState.Pitch, AttitudeState.Roll, -AttitudeState.Yaw)
+		position: Qt.vector3d(lat(), lon(), alt())
 
         function lat() {
             switch(qmlWidget.positionMode) {
@@ -86,11 +79,11 @@ OSGViewport {
         scale: Qt.vector3d(0.001, 0.001, 0.001)
     }
 
-    OSGNodeFile {
+    OSGFileNode {
         id: modelFileNode
         source: qmlWidget.modelFile
         async: false
-        optimizeMode: OSGNodeFile.OptimizeAndCheck
+        optimizeMode: OSGFileNode.OptimizeAndCheck
     }
 
     OSGCamera {

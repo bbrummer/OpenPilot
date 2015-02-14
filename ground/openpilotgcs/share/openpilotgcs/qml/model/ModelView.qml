@@ -5,14 +5,20 @@ import PfdQmlEnums 1.0
 OSGViewport {
     anchors.fill: parent
     focus: true
-    sceneData: fileNode
+    sceneData: transformNode
     camera: camera
 
-    OSGNodeFile {
+    OSGTransformNode {
+        id: transformNode
+        modelData: fileNode
+        rotate: Qt.vector3d(AttitudeState.Pitch, AttitudeState.Roll, -AttitudeState.Yaw)
+    }
+
+    OSGFileNode {
         id: fileNode
         source: qmlWidget.modelFile
         async: false
-        optimizeMode: OSGNodeFile.OptimizeAndCheck
+        optimizeMode: OSGFileNode.OptimizeAndCheck
     }
 
     OSGCamera {
