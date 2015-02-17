@@ -1,4 +1,4 @@
-import QtQuick 2.0
+import QtQuick 2.4
 import osgQtQuick 1.0
 import PfdQmlEnums 1.0
 
@@ -29,7 +29,7 @@ OSGViewport {
         clampToTerrain: true
 
         attitude: Qt.vector3d(AttitudeState.Pitch, AttitudeState.Roll, -AttitudeState.Yaw)
-		position: Qt.vector3d(lat(), lon(), alt())
+		position: Qt.vector3d(lon(), lat(), alt())
 
         function lat() {
             switch(qmlWidget.positionMode) {
