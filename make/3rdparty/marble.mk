@@ -114,9 +114,9 @@ clone_marble:
 		$(ECHO) "Checking out osgearth branch $(OSGEARTH_GIT_BRANCH)" ; \
 	else \
 		$(V1) $(MKDIR) -p $(MARBLE_SRC_DIR) ; \
-		@$(ECHO) "Cloning marble to $(call toprel, $(MARBLE_SRC_DIR))" ; \
+		$(ECHO) "Cloning marble to $(call toprel, $(MARBLE_SRC_DIR))" ; \
 		$(V1) $(GIT) clone -b $(MARBLE_GIT_BRANCH) git://anongit.kde.org/marble $(MARBLE_SRC_DIR) ; \
-		@$(ECHO) "Cloning restricted maps to $(call toprel, $(MARBLE_SRC_DIR))" ; \
+		$(ECHO) "Cloning restricted maps to $(call toprel, $(MARBLE_SRC_DIR))" ; \
 		$(V1) $(GIT) clone git://gitorious.org/marble-restricted-maps/googlemaps.git $(MARBLE_SRC_DIR)/googlemaps ; \
 		$(V1) $(GIT) clone git://gitorious.org/marble-restricted-maps/googlesat.git $(MARBLE_SRC_DIR)/googlesat ; \
 	fi
