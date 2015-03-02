@@ -110,7 +110,7 @@ endif
 include $(ROOT_DIR)/make/tools.mk
 
 # Include third party builders
-include $(ROOT_DIR)/make/3rdparty/osgearth.mk
+include $(ROOT_DIR)/make/3rdparty/3rdparty.mk
 
 # We almost need to consider autoconf/automake instead of this
 ifeq ($(UNAME), Linux)
