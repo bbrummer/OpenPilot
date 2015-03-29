@@ -26,16 +26,9 @@ public:
         QElapsedTimer t;
 
         t.start();
-        qDebug() << "OSGFileLoader - reading URL" << url;
-        QString s = url.toString();
-        if (s.startsWith("file://")) {
-            s = s.right(s.length() - QString("file://").length());
-        }
-        s = s.replace("%5C", "/");
-        // qDebug() << "OSGFileLoader - file" << s;
-        // TODO use Options to control caching...
-        qDebug() << "OSGFileLoader - load - currentContext" << QOpenGLContext::currentContext();
-        osg::Node *node = osgDB::readNodeFile(s.toStdString());
+        qDebug() << "OSGFileLoader - reading node file" << url.path();
+        // qDebug() << "OSGFileLoader - load - currentContext" << QOpenGLContext::currentContext();
+        osg::Node *node = osgDB::readNodeFile(url.path().toStdString());
         qDebug() << "OSGFileLoader - reading node" << node << "took" << t.elapsed() << "ms";
 
         emit loaded(url, node);
@@ -95,7 +88,7 @@ public:
 public slots:
     void onLoaded(const QUrl &url, osg::Node *node)
     {
-        if (optimizeMode != OSGFileNode::None) {
+        if (node && optimizeMode != OSGFileNode::None) {
             qDebug() << "OSGFileNode - optimize" << node << optimizeMode;
             osgUtil::Optimizer optimizer;
             optimizer.optimize(node, osgUtil::Optimizer::DEFAULT_OPTIMIZATIONS);

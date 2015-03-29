@@ -256,14 +256,17 @@ void systemInit()
     getrlimit(RLIMIT_NOFILE, &rl);
     rl.rlim_cur = rl.rlim_max;
     setrlimit(RLIMIT_NOFILE, &rl);
+#endif
+
+    QApplication::setAttribute(Qt::AA_X11InitThreads, true);
+
+    // protect QQuickWidget from native widgets like GLC ModelView
+    // TODO revisit this... might cause issues with gstreamer
     QApplication::setAttribute(Qt::AA_DontCreateNativeWidgetSiblings, true);
-    // Force "basic" render loop on Mac
+
+    // Force "basic" render loop
     // Only Mac uses "threaded" by default and that mode currently does not work well with OSGViewport
     qputenv("QSG_RENDER_LOOP", "basic");
-#endif
-#ifdef Q_OS_LINUX
-    QApplication::setAttribute(Qt::AA_X11InitThreads, true);
-#endif
 }
 
 static QTextStream *logStream;
@@ -312,6 +315,7 @@ inline QStringList getPluginPaths()
     QStringList rc;
     // Figure out root:  Up one from 'bin'
     QDir rootDir = QApplication::applicationDirPath();
+
     rootDir.cdUp();
     const QString rootDirPath = rootDir.canonicalPath();
 

@@ -8,6 +8,7 @@
 #include "OSGCubeNode.hpp"
 #include "OSGTextNode.hpp"
 #include "OSGModelNode.hpp"
+#include "OSGBackgroundNode.hpp"
 #include "OSGSkyNode.hpp"
 #include "OSGCamera.hpp"
 #include "OSGViewport.hpp"
@@ -25,6 +26,7 @@
 #include <osgText/String>
 #include <osgQt/QFontImplementation>
 
+#include <osgEarth/Capabilities>
 #include <osgEarth/CullingUtils>
 
 #include <QFont>
@@ -86,8 +88,10 @@ public:
     }
 };
 
-void insertCallbacks(osg::Node *node) {
+void insertCallbacks(osg::Node *node)
+{
     InsertCallbacksVisitor icv;
+
     node->accept(icv);
 }
 
@@ -108,9 +112,7 @@ osgText::Font *createFont(const std::string &name)
 {
     QFont font;
 
-    if (!font.fromString(
-            QString::fromStdString(
-                osgDB::getNameLessExtension(name)))) {
+    if (!font.fromString(QString::fromStdString(osgDB::getNameLessExtension(name)))) {
         return 0;
     }
 
@@ -225,12 +227,12 @@ QSurfaceFormat traitsToFormat(const osg::GraphicsContext::Traits *traits)
     format.setDepthBufferSize(traits->depth);
     format.setStencilBufferSize(traits->stencil);
 
-    //format.setSampleBuffers(traits->sampleBuffers);
+    // format.setSampleBuffers(traits->sampleBuffers);
     format.setSamples(traits->samples);
 
-//        format.setAlpha(traits->alpha > 0);
-//        format.setDepth(traits->depth > 0);
-//        format.setStencil(traits->stencil > 0);
+// format.setAlpha(traits->alpha > 0);
+// format.setDepth(traits->depth > 0);
+// format.setStencil(traits->stencil > 0);
 
     format.setStereo(traits->quadBufferStereo ? 1 : 0);
 
@@ -240,30 +242,40 @@ QSurfaceFormat traitsToFormat(const osg::GraphicsContext::Traits *traits)
     return format;
 }
 
-void formatToTraits(const QSurfaceFormat& format, osg::GraphicsContext::Traits *traits)
+void formatToTraits(const QSurfaceFormat & format, osg::GraphicsContext::Traits *traits)
 {
-    traits->red = format.redBufferSize();
-    traits->green = format.greenBufferSize();
-    traits->blue = format.blueBufferSize();
-    traits->alpha = format.hasAlpha() ? format.alphaBufferSize() : 0;
-    traits->depth = format.depthBufferSize();
+    traits->red     = format.redBufferSize();
+    traits->green   = format.greenBufferSize();
+    traits->blue    = format.blueBufferSize();
+    traits->alpha   = format.hasAlpha() ? format.alphaBufferSize() : 0;
+    traits->depth   = format.depthBufferSize();
     traits->stencil = format.stencilBufferSize();
 
-    //traits->sampleBuffers = format.sampleBuffers() ? 1 : 0;
+    // traits->sampleBuffers = format.sampleBuffers() ? 1 : 0;
     traits->samples = format.samples();
 
     traits->quadBufferStereo = format.stereo();
 
-    traits->doubleBuffer = format.swapBehavior() == QSurfaceFormat::DoubleBuffer;
+    traits->doubleBuffer     = format.swapBehavior() == QSurfaceFormat::DoubleBuffer;
     traits->vsync = format.swapInterval() >= 1;
 }
 
+void openGLContextInfo(QOpenGLContext *context) {
+    qDebug() << "opengl context -----------------------------------------------------";
+    qDebug() << "context :" << context->nativeHandle() << "(" << context << ")";
+    formatInfo(context->format());
+    QOpenGLContext *shareContext = context->shareContext();
+    if (shareContext) {
+        qDebug() << "opengl share context -----------------------------------------------------";
+        openGLContextInfo(shareContext);
+    }
+}
 
-void formatInfo(const QSurfaceFormat& format)
+void formatInfo(const QSurfaceFormat & format)
 {
-    qDebug().nospace() << "version   : " << format.majorVersion() << "." << format.minorVersion();
-
-    qDebug().nospace() << "profile   : " << formatProfileName(format.profile());
+    qDebug().nospace() << "surface ----------------------------------------";
+    qDebug().nospace() << "version : " << format.majorVersion() << "." << format.minorVersion();
+    qDebug().nospace() << "profile : " << formatProfileName(format.profile());
 
     qDebug().nospace() << "redBufferSize     : " << format.redBufferSize();
     qDebug().nospace() << "greenBufferSize   : " << format.greenBufferSize();
@@ -272,7 +284,7 @@ void formatInfo(const QSurfaceFormat& format)
     qDebug().nospace() << "depthBufferSize   : " << format.depthBufferSize();
     qDebug().nospace() << "stencilBufferSize : " << format.stencilBufferSize();
 
-    //qDebug().nospace() << "sampleBuffers" << format.sampleBuffers();
+    // qDebug().nospace() << "sampleBuffers" << format.sampleBuffers();
     qDebug().nospace() << "samples : " << format.samples();
 
     qDebug().nospace() << "stereo : " << format.stereo();
@@ -281,39 +293,135 @@ void formatInfo(const QSurfaceFormat& format)
     qDebug().nospace() << "swapInterval : " << format.swapInterval();
 }
 
-void traitsInfo(const osg::GraphicsContext::Traits *traits)
+void traitsInfo(const osg::GraphicsContext::Traits &traits)
 {
     unsigned int major, minor;
-    qDebug().nospace() << "versionContext : " << traits->getContextVersion(major, minor);
-    qDebug().nospace() << "version        : " << major << "." << minor;
 
-    //qDebug().nospace() << "profile   : " << formatProfileName(format.profile());
+    traits.getContextVersion(major, minor);
 
-    qDebug().nospace() << "red     : " << traits->red;
-    qDebug().nospace() << "green   : " << traits->green;
-    qDebug().nospace() << "blue    : " << traits->blue;
-    qDebug().nospace() << "alpha   : " << traits->alpha;
-    qDebug().nospace() << "depth   : " << traits->depth;
-    qDebug().nospace() << "stencil : " << traits->stencil;
+    qDebug().nospace() << "traits  ----------------------------------------";
+    qDebug().nospace() << "gl version        : " << major << "." << minor;
+    qDebug().nospace() << "glContextVersion     : " << QString::fromStdString(traits.glContextVersion);
+    qDebug().nospace() << "glContextFlags       : " << QString("%1").arg(traits.glContextFlags);
+    qDebug().nospace() << "glContextProfileMask : " << QString("%1").arg(traits.glContextProfileMask);
 
-    qDebug().nospace() << "sampleBuffers : " << traits->sampleBuffers;
-    qDebug().nospace() << "samples       : " << traits->samples;
+    qDebug().nospace() << "red     : " << traits.red;
+    qDebug().nospace() << "green   : " << traits.green;
+    qDebug().nospace() << "blue    : " << traits.blue;
+    qDebug().nospace() << "alpha   : " << traits.alpha;
+    qDebug().nospace() << "depth   : " << traits.depth;
+    qDebug().nospace() << "stencil : " << traits.stencil;
 
-    //qDebug().nospace() << "stereo : " << traits->stereo();
+    qDebug().nospace() << "sampleBuffers : " << traits.sampleBuffers;
+    qDebug().nospace() << "samples       : " << traits.samples;
 
-    qDebug().nospace() << "vsync : " << traits->vsync;
+    qDebug().nospace() << "pbuffer : " << traits.pbuffer;
+    qDebug().nospace() << "quadBufferStereo : " << traits.quadBufferStereo;
+    qDebug().nospace() << "doubleBuffer : " << traits.doubleBuffer;
 
-    //qDebug().nospace() << "swapMethod : " << traits->swapMethod;
-    //qDebug().nospace() << "swapInterval : " << traits->swapInterval();
+    qDebug().nospace() << "vsync : " << traits.vsync;
+
+    // qDebug().nospace() << "swapMethod : " << traits.swapMethod;
+    // qDebug().nospace() << "swapInterval : " << traits.swapInterval();
+}
+
+void capabilitiesInfo(const osgEarth::Capabilities &caps)
+{
+    qDebug().nospace() << "capabilities  ----------------------------------------";
+
+    qDebug().nospace() << "vendor : " << QString::fromStdString(caps.getVendor());
+    qDebug().nospace() << "version : " << QString::fromStdString(caps.getVersion());
+    qDebug().nospace() << "renderer : " << QString::fromStdString(caps.getRenderer());
+
+    qDebug().nospace() << "GLSL supported : " << caps.supportsGLSL();
+    qDebug().nospace() << "GLSL version   : " << caps.getGLSLVersionInt();
+
+    qDebug().nospace() << "GLES : " << caps.isGLES();
+
+
+//
+///** maximum # of texture units exposed in the fixed-function pipeline */
+// int getMaxFFPTextureUnits() const { return _maxFFPTextureUnits; }
+//
+///** maximum # of texture image units exposed in a GPU fragment shader */
+// int getMaxGPUTextureUnits() const { return _maxGPUTextureUnits; }
+//
+///** maximum # of texture coordinate indices available in a GPU fragment shader */
+// int getMaxGPUTextureCoordSets() const { return _maxGPUTextureCoordSets; }
+//
+///** maximum # of vertex attributes available in a shader */
+// int getMaxGPUAttribs() const { return _maxGPUAttribs; }
+//
+///** maximum supported size (in pixels) of a texture */
+// int getMaxTextureSize() const { return _maxTextureSize; }
+//
+///** maximum texture size that doesn't cause a slowdown (vendor-specific) */
+// int getMaxFastTextureSize() const { return _maxFastTextureSize; }
+//
+///** maximum number of openGL lights */
+// int getMaxLights() const { return _maxLights; }
+//
+///** bits in depth buffer */
+// int getDepthBufferBits() const { return _depthBits; }
+//
+///** whether the GPU supports texture arrays */
+// bool supportsTextureArrays() const { return _supportsTextureArrays; }
+//
+///** whether the GPU supports OpenGL 3D textures */
+// bool supportsTexture3D() const { return _supportsTexture3D; }
+//
+///** whether the GPU supports OpenGL multi-texturing */
+// bool supportsMultiTexture() const { return _supportsMultiTexture; }
+//
+///** whether the GPU supports OpenGL stencil wrapping extensions */
+// bool supportsStencilWrap() const { return _supportsStencilWrap; }
+//
+///** whether the GPU supports OpenGL the two-sided stenciling extension */
+// bool supportsTwoSidedStencil() const { return _supportsTwoSidedStencil; }
+//
+///** whether the GPU support the texture2dLod() function */
+// bool supportsTexture2DLod() const { return _supportsTexture2DLod; }
+//
+///** whether the GPU properly supports updating an existing texture with a new mipmapped image */
+// bool supportsMipmappedTextureUpdates() const { return _supportsMipmappedTextureUpdates; }
+//
+///** whether the GPU supports DEPTH_PACKED_STENCIL buffer */
+// bool supportsDepthPackedStencilBuffer() const { return _supportsDepthPackedStencilBuffer; }
+//
+///** whether the GPU supporst occlusion query */
+// bool supportsOcclusionQuery() const { return _supportsOcclusionQuery; }
+//
+///** whether the GPU supports DrawInstanced rendering */
+// bool supportsDrawInstanced() const { return _supportsDrawInstanced; }
+//
+///** whether the GPU supports Uniform Buffer Objects */
+// bool supportsUniformBufferObjects() const { return _supportsUniformBufferObjects; }
+//
+///** whether the GPU can handle non-power-of-two textures. */
+// bool supportsNonPowerOfTwoTextures() const { return _supportsNonPowerOfTwoTextures; }
+//
+///** maximum size of a uniform buffer block, in bytes */
+// int getMaxUniformBlockSize() const { return _maxUniformBlockSize; }
+//
+///** whether to prefer display lists over VBOs for static geometry. */
+// bool preferDisplayListsForStaticGeometry() const { return _preferDLforStaticGeom; }
+//
+///** number of logical CPUs available. */
+// int getNumProcessors() const { return _numProcessors; }
+//
+///** whether the GPU supports writing to the depth fragment */
+// bool supportsFragDepthWrite() const { return _supportsFragDepthWrite; }
 }
 
 QString formatProfileName(QSurfaceFormat::OpenGLContextProfile profile)
 {
-    switch(profile) {
+    switch (profile) {
     case QSurfaceFormat::NoProfile:
         return "No profile";
+
     case QSurfaceFormat::CoreProfile:
         return "Core profile";
+
     case QSurfaceFormat::CompatibilityProfile:
         return "Compatibility profile>";
     }
@@ -322,13 +430,16 @@ QString formatProfileName(QSurfaceFormat::OpenGLContextProfile profile)
 
 QString formatSwapBehaviorName(QSurfaceFormat::SwapBehavior swapBehavior)
 {
-    switch(swapBehavior) {
+    switch (swapBehavior) {
     case QSurfaceFormat::DefaultSwapBehavior:
         return "Default";
+
     case QSurfaceFormat::SingleBuffer:
         return "Single buffer";
+
     case QSurfaceFormat::DoubleBuffer:
         return "Double buffer";
+
     case QSurfaceFormat::TripleBuffer:
         return "Triple buffer";
     }
@@ -351,6 +462,7 @@ void registerTypes(const char *uri)
 
     qmlRegisterType<osgQtQuick::OSGModelNode>(uri, maj, min, "OSGModelNode");
     qmlRegisterType<osgQtQuick::OSGSkyNode>(uri, maj, min, "OSGSkyNode");
+    qmlRegisterType<osgQtQuick::OSGBackgroundNode>(uri, maj, min, "OSGBackgroundNode");
     qmlRegisterType<osgQtQuick::OSGCamera>(uri, maj, min, "OSGCamera");
 }
 } // namespace osgQtQuick

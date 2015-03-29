@@ -7,6 +7,7 @@
 #include <osg/GraphicsContext>
 
 #include <QtGlobal>
+#include <QOpenGLContext>
 #include <QSurfaceFormat>
 
 #include <string>
@@ -23,6 +24,10 @@ namespace osgText {
 class Text;
 class Font;
 } // namespace osgText
+
+namespace osgEarth {
+class Capabilities;
+} // namespace osgEarth
 
 QT_BEGIN_NAMESPACE
 class QFont;
@@ -90,9 +95,13 @@ OSGQTQUICK_EXPORT osgText::Text *createText(const osg::Vec3 &pos,
                                             osgText::Font *font = 0);
 
 OSGQTQUICK_EXPORT QSurfaceFormat traitsToFormat(const osg::GraphicsContext::Traits *traits);
-OSGQTQUICK_EXPORT void formatToTraits(const QSurfaceFormat& format, osg::GraphicsContext::Traits *traits);
-OSGQTQUICK_EXPORT void formatInfo(const QSurfaceFormat& format);
-OSGQTQUICK_EXPORT void traitsInfo(const osg::GraphicsContext::Traits *traits);
+OSGQTQUICK_EXPORT void formatToTraits(const QSurfaceFormat & format, osg::GraphicsContext::Traits *traits);
+
+OSGQTQUICK_EXPORT void formatInfo(const QSurfaceFormat & format);
+OSGQTQUICK_EXPORT void traitsInfo(const osg::GraphicsContext::Traits & traits);
+OSGQTQUICK_EXPORT void capabilitiesInfo(const osgEarth::Capabilities & caps);
+OSGQTQUICK_EXPORT void openGLContextInfo(QOpenGLContext *context);
+
 OSGQTQUICK_EXPORT QString formatProfileName(QSurfaceFormat::OpenGLContextProfile profile);
 OSGQTQUICK_EXPORT QString formatSwapBehaviorName(QSurfaceFormat::SwapBehavior swapBehavior);
 

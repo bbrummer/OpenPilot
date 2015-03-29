@@ -30,9 +30,12 @@
 #include "osgQtQuick/Utility.hpp"
 
 #include <osg/DisplaySettings>
+#include <osg/GraphicsContext>
 #include <osg/Version>
+#include <osg/Notify>
+#include <osg/DeleteHandler>
 #include <osgDB/Registry>
-#include <osgQt/GraphicsWindowQt>
+#include <osgViewer/GraphicsWindow>
 
 #include <osgEarth/Version>
 #include <osgEarth/Cache>
@@ -40,6 +43,8 @@
 #include <osgEarth/Registry>
 #include <osgEarthDrivers/cache_filesystem/FileSystemCache>
 
+#include <QOpenGLContext>
+#include <QOffscreenSurface>
 #include <QDebug>
 
 #ifdef OSG_USE_QT_PRIVATE
@@ -49,49 +54,15 @@
 
 #include <deque>
 #include <string>
-// #include <stdlib.h>
 
-#ifdef Q_WS_X11
-#include <X11/Xlib.h>
-#endif
-
-bool OsgEarth::registered = false;
+bool OsgEarth::registered  = false;
 bool OsgEarth::initialized = false;
 
-/*
+class OSGEARTH_LIB_EXPORT QtNotifyHandler : public osg::NotifyHandler {
+public:
+    void notify(osg::NotifySeverity severity, const char *message);
+};
 
-   Debugging tips
-
-   Windows DIB issues
-
-   The environment variable QT_QPA_VERBOSE controls the debug level.
-   It takes the form {<keyword1>:<level1>,<keyword2>:<level2>},
-   where keyword is one of integration,  windows, backingstore and fonts.
-   Level is an integer 0..9.
-
-   OSG:
-   export OSG_NOTIFY_LEVEL=DEBUG
-
-
- */
-
-
-/*
-Z-fighting can happen with coincident polygons, but it can also happen when the Z buffer has insufficient resolution
-to represent the data in the scene. In the case where you are close up to an object (the helicopter)
-and also viewing a far-off object (the earth) the Z buffer has to stretch to accommodate them both.
-This can result in loss of precision and Z fighting.
-
-Assuming you are not messing around with the near/far computations, and assuming you don't have any other objects
-in the scene that are farther off than the earth, there are a couple things you can try.
-
-One, adjust the near/far ratio of the camera. Look at osgearth_viewer.cpp to see how.
-
-Two, you can try to use the AutoClipPlaneHandler. You can install it automatically by running osgearth_viewer --autoclip.
-
-If none of that works, you can try parenting your helicopter with an osg::Camera in NESTED mode,
-which will separate the clip plane calculations of the helicopter from those of the earth. *
- */
 void OsgEarth::registerQmlTypes()
 {
     // TOOO not thread safe...
@@ -100,7 +71,7 @@ void OsgEarth::registerQmlTypes()
     }
     registered = true;
 
-    initialize();
+    // initialize();
 
     // Register Qml types
     osgQtQuick::registerTypes("osgQtQuick");
@@ -116,42 +87,34 @@ void OsgEarth::initialize()
 
     qDebug() << "Initializing osgearth...";
 
-#ifdef Q_WS_X11
-    // required for multi-threaded viewer on linux:
-    XInitThreads();
-#endif
-
     osg::DisplaySettings::instance()->setNumOfDatabaseThreadsHint(16);
     osg::DisplaySettings::instance()->setNumOfHttpDatabaseThreadsHint(8);
 
     initializePathes();
 
-    // osg::DisplaySettings::instance()->setMinimumNumStencilBits(8);
-    // this line causes crashes on Windows!!!
-    // osgQt::initQtWindowingSystem();
-
-    // force early initialization of osgEarth registry
-    // this important as doing it later (when OpenGL is already in use) might thrash some GL contexts
-    // TODO : this is done too early when no window is displayed which causes a windows to be briefly flashed on Linux
-    //osgEarth::Registry::capabilities();
+    initWindowingSystem();
 
     initializeCache();
+
+    // force early initialization of osgEarth capabilities
+    // this important as doing it later (when OpenGL is already in use) might thrash some GL contexts
+    // TODO : this is done too early when no window is displayed which causes a windows to be briefly flashed on Linux
+    osgEarth::Registry::capabilities();
 
     displayInfo();
 }
 
 void OsgEarth::initializePathes()
 {
-    // clear and initialize data file path list
+    // initialize data file path list
     osgDB::FilePathList &dataFilePathList = osgDB::Registry::instance()->getDataFilePathList();
-    dataFilePathList.clear();
-    dataFilePathList.push_back(GCSDirs::sharePath("osgearth").toStdString());
-    dataFilePathList.push_back(GCSDirs::sharePath("osgearth/data").toStdString());
 
-    // clear and initialize library file path list
+    dataFilePathList.push_front(GCSDirs::sharePath("osgearth").toStdString());
+    dataFilePathList.push_front(GCSDirs::sharePath("osgearth/data").toStdString());
+
+    // initialize library file path list
     osgDB::FilePathList &libraryFilePathList = osgDB::Registry::instance()->getLibraryFilePathList();
-    //libraryFilePathList.clear();
-    libraryFilePathList.push_back(GCSDirs::libraryPath("osg").toStdString());
+    libraryFilePathList.push_front(GCSDirs::libraryPath("osg").toStdString());
 }
 
 void OsgEarth::initializeCache()
@@ -159,19 +122,21 @@ void OsgEarth::initializeCache()
     QString cachePath = Utils::PathUtils().GetStoragePath() + "osgearth/cache";
 
     osgEarth::Drivers::FileSystemCacheOptions cacheOptions;
+
     cacheOptions.rootPath() = cachePath.toStdString();
 
     osg::ref_ptr<osgEarth::Cache> cache = osgEarth::CacheFactory::create(cacheOptions);
     if (cache->isOK()) {
-        unsigned int policyUsage = osgEarth::CachePolicy::USAGE_READ_WRITE;
-        //policyUsage |= osgEarth::CachePolicy::USAGE_CACHE_ONLY;
-
+        // set cache
         osgEarth::Registry::instance()->setCache(cache.get());
 
+        // set cache policy
+        const osgEarth::CachePolicy cachePolicy(osgEarth::CachePolicy::USAGE_READ_WRITE);
+
         // The default cache policy used when no policy is set elsewhere
-        osgEarth::Registry::instance()->setDefaultCachePolicy(osgEarth::CachePolicy(osgEarth::CachePolicy::Usage(policyUsage)));
+        osgEarth::Registry::instance()->setDefaultCachePolicy(cachePolicy);
         // The override cache policy (overrides all others if set)
-        //osgEarth::Registry::instance()->setOverrideCachePolicy(osgEarth::CachePolicy(osgEarth::CachePolicy::Usage(policyUsage)));
+        // osgEarth::Registry::instance()->setOverrideCachePolicy(cachePolicy);
     } else {
         qWarning() << "OsgEarth::initializeCache - Failed to initialize cache";
     }
@@ -211,117 +176,376 @@ void OsgEarth::displayInfo()
         it++;
     }
 
-    qDebug() << "osg cache:" << qgetenv("OSGEARTH_CACHE_PATH");
+    // qDebug() << "osg cache:" << qgetenv("OSGEARTH_CACHE_PATH");
 
     qDebug() << "osg database threads:" << osg::DisplaySettings::instance()->getNumOfDatabaseThreadsHint();
     qDebug() << "osg http database threads:" << osg::DisplaySettings::instance()->getNumOfHttpDatabaseThreadsHint();
 
-    qDebug() << "Platform supports GLSL:" << osgEarth::Registry::capabilities().supportsGLSL();
+    // qDebug() << "Platform supports GLSL:" << osgEarth::Registry::capabilities().supportsGLSL();
 
 #ifdef OSG_USE_QT_PRIVATE
     bool threadedOpenGL = QGuiApplicationPrivate::platform_integration->hasCapability(QPlatformIntegration::ThreadedOpenGL);
     Debug() << "Platform supports threaded OpenGL:" << threadedOpenGL;
 #endif
 
+    osgQtQuick::capabilitiesInfo(osgEarth::Registry::capabilities());
 }
 
-/*
+void QtNotifyHandler::notify(osg::NotifySeverity severity, const char *message)
+{
+    QString msg(message);
 
-   Why not use setRenderTarget
+    // right trim message...
+    int n = msg.size() - 1;
 
-   export OSG_MULTIMONITOR_MULTITHREAD_WIN32_NVIDIA_WORKAROUND=On
-   export OSG_NOTIFY_LEVEL=DEBUG
-   http://trac.openscenegraph.org/projects/osg//wiki/Support/TipsAndTricks
+    for (; n >= 0; --n) {
+        if (!msg.at(n).isSpace()) {
+            break;
+        }
+    }
+    msg = msg.left(n + 1);
 
-   Switch to 5.4 and use this :http://doc-snapshot.qt-project.org/qt5-5.4/qquickframebufferobject.html#details
-   http://doc-snapshot.qt-project.org/qt5-5.4/qtquick-visualcanvas-scenegraph.html#scene-graph-and-rendering
-   http://www.kdab.com/opengl-in-qt-5-1-part-1/
+    switch (severity) {
+    case osg::ALWAYS:
+        qDebug().noquote() << "[OSG]" << msg;
+        break;
+    case osg::FATAL:
+        qCritical().noquote() << "[OSG FATAL]" << msg;
+        break;
+    case osg::WARN:
+        qWarning().noquote() << "[OSG WARN]" << msg;
+        break;
+    case osg::NOTICE:
+        qDebug().noquote() << "[OSG NOTICE]" << msg;
+        break;
+    case osg::INFO:
+        qDebug().noquote() << "[OSG]" << msg;
+        break;
+    case osg::DEBUG_INFO:
+        qDebug().noquote() << "[OSG DEBUG INFO]" << msg;
+        break;
+    case osg::DEBUG_FP:
+        qDebug().noquote() << "[OSG DEBUG FP]" << msg;
+        break;
+    }
+}
 
-   THIS MENTIONS GLUT...
-   http://www.multigesture.net/articles/how-to-compile-openscenegraph-2-x-using-mingw/
-   http://www.mingw.org/category/wiki/opengl
+// TODO no need to derive from GraphicsWindow (derive directly from GraphicsContext instead)
+class OSGEARTH_LIB_EXPORT GraphicsWindowQt : public osgViewer::GraphicsWindow {
+public:
+    GraphicsWindowQt(osg::GraphicsContext::Traits *traits);
+    virtual ~GraphicsWindowQt();
 
-   INTERESTING : http://qt-project.org/forums/viewthread/24535
+    virtual bool setWindowRectangleImplementation(int x, int y, int width, int height);
+    virtual void getWindowRectangle(int & x, int & y, int & width, int & height);
+    virtual bool setWindowDecorationImplementation(bool windowDecoration);
+    virtual bool getWindowDecoration() const;
+    virtual void grabFocus();
+    virtual void grabFocusIfPointerInWindow();
+    virtual void raiseWindow();
+    virtual void setWindowName(const std::string & name);
+    virtual std::string getWindowName();
+    virtual void useCursor(bool cursorOn);
+    virtual void setCursor(MouseCursor cursor);
+    virtual bool valid() const;
+    virtual bool realizeImplementation();
+    virtual bool isRealizedImplementation() const;
+    virtual void closeImplementation();
+    virtual bool makeCurrentImplementation();
+    virtual bool releaseContextImplementation();
+    virtual void swapBuffersImplementation();
+    virtual void runOperations();
 
-   https://groups.google.com/forum/#!msg/osg-users/HDabWUVaR2w/C6rPKKeKoYkJ
+    virtual void requestWarpPointer(float x, float y);
 
-   http://trac.openscenegraph.org/projects/osg/wiki/Community/OpenGL-ES
+protected:
 
-   http://upstream.rosalinux.ru/changelogs/openscenegraph/3.2.0/changelog.html
+    bool _realized;
+    QOpenGLContext *_glContext;
+    QOffscreenSurface *_surface;
+};
 
-   MESA https://groups.google.com/forum/#!topic/osg-users/_2MqkA-wH1Q
+GraphicsWindowQt::GraphicsWindowQt(osg::GraphicsContext::Traits *traits) : _realized(false), _glContext(NULL), _surface(NULL)
+{
+    _traits = traits;
 
-   GL version https://groups.google.com/forum/#!topic/osg-users/UiyYQ0Fw7MQ
+    // update by WindowData
+    // WindowData* windowData = _traits.get() ? dynamic_cast<WindowData*>(_traits->inheritedWindowData.get()) : 0;
+    // if ( !_widget )
+    // _widget = windowData ? windowData->_widget : NULL;
+    // if ( !parent )
+    // parent = windowData ? windowData->_parent : NULL;
 
-   http://trac.openscenegraph.org/projects/osg//wiki/Support/PlatformSpecifics/Mingw
+    // initialize State
+    setState(new osg::State);
+    getState()->setGraphicsContext(this);
 
-   Qt & OpenGL
-   http://blog.qt.digia.com/blog/2009/12/16/qt-graphics-and-performance-an-overview/
-   http://blog.qt.digia.com/blog/2010/01/06/qt-graphics-and-performance-opengl/
- */
+    // initialize contextID
+    if (_traits.valid() && _traits->sharedContext.valid()) {
+        getState()->setContextID(_traits->sharedContext->getState()->getContextID());
+        incrementContextIDUsageCount(getState()->getContextID());
+    } else {
+        getState()->setContextID(osg::GraphicsContext::createNewContextID());
+    }
+}
 
-// BUGS
-// if resizing a gadget below the viewport, the viewport will stop shrinking at 64 pixel
-// but it is possible to continue resizing the gadget and the gadget decorator will disapear behing the GL view
-// will
+GraphicsWindowQt::~GraphicsWindowQt()
+{
+    close();
+}
 
-// Errors/Freeze/Crashes:
+bool GraphicsWindowQt::setWindowRectangleImplementation(int x, int y, int width, int height)
+{
+    return true;
+}
 
-// BLANK : Error: cannot draw stage due to undefined viewport.
-// ABNORMAL TERMINATION : createDIB: CreateDIBSection failed.
+void GraphicsWindowQt::getWindowRectangle(int & x, int & y, int & width, int & height)
+{}
 
-/*
-   CRASH
-   osgQtQuick::OSGViewport : Update called for a item without content
-   VERTEX glCompileShader "atmos_vertex_main" FAILED
-   VERTEX glCompileShader "main(vert)" FAILED
-   FRAGMENT glCompileShader "main(frag)" FAILED
-   glLinkProgram "SimpleSky Scene Lighting" FAILED
-   Program "SimpleSky Scene Lighting" infolog:
-   Vertex info
-   -----------
-   An error occurred
+bool GraphicsWindowQt::setWindowDecorationImplementation(bool windowDecoration)
+{
+    return false;
+}
 
-   Fragment info
-   -------------
-   An error occurred
+bool GraphicsWindowQt::getWindowDecoration() const
+{
+    return false;
+}
 
-   [osgEarth]* [VirtualProgram] Program link failure!
-   VERTEX glCompileShader "main(vert)" FAILED
-   FRAGMENT glCompileShader "main(frag)" FAILED
-   glLinkProgram "osgEarth.ModelNode" FAILED
-   Program "osgEarth.ModelNode" infolog:
-   Vertex info
-   -----------
-   An error occurred
+void GraphicsWindowQt::grabFocus()
+{}
 
-   Fragment info
-   -------------
-   An error occurred
+void GraphicsWindowQt::grabFocusIfPointerInWindow()
+{}
 
-   [osgEarth]* [VirtualProgram] Program link failure!
- */
+void GraphicsWindowQt::raiseWindow()
+{}
 
-/*
-   osgQtQuick::OSGViewport : Update called for a item without content
-   VERTEX glCompileShader "atmos_vertex_main" FAILED
-   VERTEX glCompileShader "main(vert)" FAILED
-   FRAGMENT glCompileShader "main(frag)" FAILED
-   glLinkProgram "SimpleSky Scene Lighting" FAILED
-   Program "SimpleSky Scene Lighting" infolog:
-   Vertex info
-   -----------
-   An error occurred
+void GraphicsWindowQt::setWindowName(const std::string & name)
+{}
 
-   Fragment info
-   -------------
-   An error occurred
+std::string GraphicsWindowQt::getWindowName()
+{
+    return "";
+}
 
-   [osgEarth]* [VirtualProgram] Program link failure!
-   Warning: detected OpenGL error 'out of memory' at After Renderer::compile
-   terminate called after throwing an instance of 'std::bad_alloc'
-   what():  std::bad_alloc
+void GraphicsWindowQt::useCursor(bool cursorOn)
+{}
 
-   This application has requested the Runtime to terminate it in an unusual way.
-   Please contact the application's support team for more information.
- */
+void GraphicsWindowQt::setCursor(MouseCursor cursor)
+{}
+
+bool GraphicsWindowQt::valid() const
+{
+    if (_glContext) {
+        return _glContext->isValid();
+    }
+    return true;
+}
+
+bool GraphicsWindowQt::realizeImplementation()
+{
+    // save the current context
+    // note: this will save only Qt-based contexts
+
+    const QOpenGLContext *savedContext = QOpenGLContext::currentContext();
+
+    if (!savedContext) {
+        _glContext = new QOpenGLContext();
+        _glContext->create();
+        _surface   = new QOffscreenSurface();
+        _surface->setFormat(_glContext->format());
+        _surface->create();
+        osgQtQuick::formatInfo(_surface->format());
+    }
+// const QGLContext *savedContext = QGLContext::currentContext();
+//
+//// initialize GL context for the widget
+// if ( !valid() )
+// _widget->glInit();
+//
+//// make current
+// _realized = true;
+// bool result = makeCurrent();
+// _realized = false;
+//
+//// fail if we do not have current context
+// if ( !result )
+// {
+// if ( savedContext )
+// const_cast< QGLContext* >( savedContext )->makeCurrent();
+//
+// OSG_WARN << "Window realize: Can make context current.";
+// return false;
+// }
+//
+    _realized = true;
+//
+//// make sure the event queue has the correct window rectangle size and input range
+// getEventQueue()->syncWindowRectangleWithGraphcisContext();
+//
+//// make this window's context not current
+//// note: this must be done as we will probably make the context current from another thread
+////       and it is not allowed to have one context current in two threads
+// if( !releaseContext() )
+// OSG_WARN << "Window realize: Can not release context.";
+//
+//// restore previous context
+// if ( savedContext )
+// const_cast< QGLContext* >( savedContext )->makeCurrent();
+//
+    return true;
+}
+
+bool GraphicsWindowQt::isRealizedImplementation() const
+{
+    return _realized;
+}
+
+void GraphicsWindowQt::closeImplementation()
+{
+    qDebug() << "GraphicsWindowQt::closeImplementation";
+    _realized = false;
+    if (_glContext) {
+        delete _glContext;
+    }
+    if (_surface) {
+        _surface->destroy();
+        delete _surface;
+    }
+}
+
+void GraphicsWindowQt::runOperations()
+{
+    // While in graphics thread this is last chance to do something useful before
+    // graphics thread will execute its operations.
+// if (_widget->getNumDeferredEvents() > 0)
+// _widget->processDeferredEvents();
+//
+// if (QGLContext::currentContext() != _widget->context())
+// _widget->makeCurrent();
+//
+    qDebug() << "GraphicsWindowQt::runOperations";
+    GraphicsWindow::runOperations();
+}
+
+bool GraphicsWindowQt::makeCurrentImplementation()
+{
+    if (_glContext) {
+        qDebug() << "GraphicsWindowQt::makeCurrentImplementation : " << _surface;
+        _glContext->makeCurrent(_surface);
+    }
+    return true;
+}
+
+bool GraphicsWindowQt::releaseContextImplementation()
+{
+    if (_glContext) {
+        qDebug() << "GraphicsWindowQt::releaseContextImplementation";
+        _glContext->doneCurrent();
+    }
+    return true;
+}
+
+void GraphicsWindowQt::swapBuffersImplementation()
+{
+// _widget->swapBuffers();
+//
+//// FIXME: the processDeferredEvents should really be executed in a GUI (main) thread context but
+//// I couln't find any reliable way to do this. For now, lets hope non of *GUI thread only operations* will
+//// be executed in a QGLWidget::event handler. On the other hand, calling GUI only operations in the
+//// QGLWidget event handler is an indication of a Qt bug.
+// if (_widget->getNumDeferredEvents() > 0)
+// _widget->processDeferredEvents();
+//
+//// We need to call makeCurrent here to restore our previously current context
+//// which may be changed by the processDeferredEvents function.
+// if (QGLContext::currentContext() != _widget->context())
+// _widget->makeCurrent();
+}
+
+void GraphicsWindowQt::requestWarpPointer(float x, float y)
+{}
+
+class QtWindowingSystem : public osg::GraphicsContext::WindowingSystemInterface {
+public:
+
+    QtWindowingSystem()
+    {
+    }
+
+    ~QtWindowingSystem()
+    {
+        if (osg::Referenced::getDeleteHandler()) {
+            osg::Referenced::getDeleteHandler()->setNumFramesToRetainObjects(0);
+            osg::Referenced::getDeleteHandler()->flushAll();
+        }
+    }
+
+    // Access the Qt windowing system through this singleton class.
+    static QtWindowingSystem *getInterface()
+    {
+        static QtWindowingSystem *qtInterface = new QtWindowingSystem;
+
+        return qtInterface;
+    }
+
+    // Return the number of screens present in the system
+    virtual unsigned int getNumScreens(const osg::GraphicsContext::ScreenIdentifier & /*si*/)
+    {
+        qWarning() << "osgQt: getNumScreens() not implemented yet.";
+        return 0;
+    }
+
+    // Return the resolution of specified screen
+    // (0,0) is returned if screen is unknown
+    virtual void getScreenSettings(const osg::GraphicsContext::ScreenIdentifier & /*si*/, osg::GraphicsContext::ScreenSettings & /*resolution*/)
+    {
+        qWarning() << "osgQt: getScreenSettings() not implemented yet.";
+    }
+
+    // Set the resolution for given screen
+    virtual bool setScreenSettings(const osg::GraphicsContext::ScreenIdentifier & /*si*/, const osg::GraphicsContext::ScreenSettings & /*resolution*/)
+    {
+        qWarning() << "osgQt: setScreenSettings() not implemented yet.";
+        return false;
+    }
+
+    // Enumerates available resolutions
+    virtual void enumerateScreenSettings(const osg::GraphicsContext::ScreenIdentifier & /*screenIdentifier*/, osg::GraphicsContext::ScreenSettingsList & /*resolution*/)
+    {
+        qWarning() << "osgQt: enumerateScreenSettings() not implemented yet.";
+    }
+
+    // Create a graphics context with given traits
+    virtual osg::GraphicsContext *createGraphicsContext(osg::GraphicsContext::Traits *traits)
+    {
+        // if (traits->pbuffer)
+        // {
+        // OSG_WARN << "osgQt: createGraphicsContext - pbuffer not implemented yet.";
+        // return NULL;
+        // }
+        // else
+        // {
+        osg::ref_ptr< GraphicsWindowQt > gc = new GraphicsWindowQt(traits);
+
+        if (gc->valid()) {
+            return gc.release();
+        } else {
+            return NULL;
+        }
+        // }
+    }
+
+private:
+
+    // No implementation for these
+    QtWindowingSystem(const QtWindowingSystem &);
+    QtWindowingSystem & operator=(const QtWindowingSystem &);
+};
+
+void OsgEarth::initWindowingSystem()
+{
+    // graphicswindow_QtQuick();
+    osg::GraphicsContext::setWindowingSystemInterface(QtWindowingSystem::getInterface());
+}
