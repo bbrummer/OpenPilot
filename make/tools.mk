@@ -106,6 +106,7 @@ else ifeq ($(UNAME), Windows)
     CMAKE_URL      := http://www.cmake.org/files/v2.8/cmake-2.8.12.2-win32-x86.zip
     CMAKE_MD5_URL  := http://wiki.openpilot.org/download/attachments/18612236/cmake-2.8.12.2-win32-x86.zip.md5
     OSG_URL        := http://wiki.openpilot.org/download/attachments/5472258/osg-3.2.1-mingw491_32-qt-5.4.0.tar.gz
+    MSYS_URL       := http://wiki.openpilot.org/download/attachments/5472258/MSYS-20111123.zip
 endif
 
 GTEST_URL := http://wiki.openpilot.org/download/attachments/18612236/gtest-1.6.0.zip
@@ -135,6 +136,7 @@ else ifeq ($(UNAME), Windows)
     OPENSSL_DIR  := $(TOOLS_DIR)/openssl-1.0.1e-win32
     MESAWIN_DIR  := $(TOOLS_DIR)/mesawin
     CMAKE_DIR    := $(TOOLS_DIR)/cmake-2.8.12.2-win32-x86
+    MSYS_DIR     := $(TOOLS_DIR)/msys
     OSG_SDK_DIR  := $(TOOLS_DIR)/osg-3.2.1-mingw491_32-qt-5.4.0
 endif
 
@@ -961,6 +963,28 @@ endif
 .PHONY: cmake_version
 cmake_version:
 	-$(V1) $(ECHO) "`$(CMAKE) --version`"
+
+##############################
+#
+# msys
+#
+##############################
+
+ifeq ($(UNAME), Windows)
+
+$(eval $(call TOOL_INSTALL_TEMPLATE,msys,$(MSYS_DIR),$(MSYS_URL),,$(notdir $(MSYS_URL))))
+
+ifeq ($(shell [ -d "$(MSYS_DIR)" ] && $(ECHO) "exists"), exists)
+    export MSYS_DIR := $(MSYS_DIR)
+else
+    # not installed, hope it's in the path...
+    #$(info $(EMPTY) WARNING     $(call toprel, $(MSYS_DIR)) not found (make msys_install), using system PATH)
+endif
+
+.PHONY: msys_version
+msys_version:
+
+endif
 
 ##############################
 #
