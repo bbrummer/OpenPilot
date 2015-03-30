@@ -18,6 +18,8 @@ mount d:/Projects/OpenPilotTools/qt-5.4.0/Tools/mingw491_32 /mingw
 # Environment
 ################################################################################
 
+cd $ROOT_DIR
+
 WORKING_DIR=$PWD
 
 echo Working dir $WORKING_DIR
@@ -32,7 +34,7 @@ BUILD_DIR=$ROOT_DIR/build/3rdparty/osg_dependencies
 
 HOST=mingw32
 
-#DOWNLOAD_FILES=1
+#DOWNLOAD_FILES=0
 
 ################################################################################
 # wget
