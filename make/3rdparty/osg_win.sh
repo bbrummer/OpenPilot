@@ -40,6 +40,7 @@ if [ "$DOWNLOAD_FILES" -eq 1 ]; then
 
 mkdir -p $DOWNLOAD_DIR/
 
+wget -P $DOWNLOAD_DIR/ http://pkgconfig.freedesktop.org/releases/pkg-config-0.28.tar.gz
 wget -P $DOWNLOAD_DIR/ http://zlib.net/zlib-1.2.8.tar.gz
 wget -P $DOWNLOAD_DIR/ http://www.ijg.org/files/jpegsrc.v9a.tar.gz
 wget -P $DOWNLOAD_DIR/ http://sourceforge.net/projects/libpng/files/libpng16/1.6.16/libpng-1.6.16.tar.gz
@@ -172,8 +173,8 @@ echo "Building libpng..."
 echo "****************************************"
 
 cd $SOURCE_DIR
-tar xzf $DOWNLOAD_DIR/libpng-1.6.14.tar.gz -C .
-cd libpng-1.6.14
+tar xzf $DOWNLOAD_DIR/libpng-1.6.16.tar.gz -C .
+cd libpng-1.6.16
 
 ./configure --prefix=$BUILD_DIR --build=$HOST
 make
