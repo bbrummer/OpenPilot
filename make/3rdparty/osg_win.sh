@@ -11,30 +11,26 @@
 
 # .\OpenPilotTools\msys\bin\sh --login -i -c /d/Projects/OpenPilot/make/3rdparty/osg_win.sh
 
-umount /mingw
-mount d:/Projects/OpenPilotTools/qt-5.4.0/Tools/mingw491_32 /mingw
-
 ################################################################################
 # Environment
 ################################################################################
 
-cd $ROOT_DIR
-
-WORKING_DIR=$PWD
-
+#WORKING_DIR=$PWD
+WORKING_DIR=/C/OP/TP-WIN-JOB1/make/3rdparty
 echo Working dir $WORKING_DIR
 
-#OPENPILOT_DL_DIR=/d/Projects/OpenPilotDownloads
+ROOT_DIR=$WORKING_DIR/../..
 
-#ROOT_DIR=/d/Projects/OpenPilot
-
-DOWNLOAD_DIR=$OPENPILOT_DL_DIR/osg
+DOWNLOAD_DIR=$ROOT_DIR/downloads/osg
 SOURCE_DIR=$ROOT_DIR/3rdparty/osg_dependencies
 BUILD_DIR=$ROOT_DIR/build/3rdparty/osg_dependencies
 
 HOST=mingw32
 
-#DOWNLOAD_FILES=0
+DOWNLOAD_FILES=1
+
+umount /mingw
+mount /C/Apps/tools/qt-5.4.0/Tools/mingw491_32 /mingw
 
 ################################################################################
 # wget
