@@ -106,7 +106,7 @@ else ifeq ($(UNAME), Windows)
     CMAKE_URL      := http://www.cmake.org/files/v2.8/cmake-2.8.12.2-win32-x86.zip
     CMAKE_MD5_URL  := http://wiki.openpilot.org/download/attachments/18612236/cmake-2.8.12.2-win32-x86.zip.md5
     OSG_URL        := http://wiki.openpilot.org/download/attachments/5472258/osg-3.2.1-mingw491_32-qt-5.4.0.tar.gz
-    MSYS_URL       := http://wiki.openpilot.org/download/attachments/5472258/MSYS-20111123.zip
+    MSYS_URL       := https://wiki.openpilot.org/download/attachments/5472258/MSYS-1.0.11.zip
 endif
 
 GTEST_URL := http://wiki.openpilot.org/download/attachments/18612236/gtest-1.6.0.zip
