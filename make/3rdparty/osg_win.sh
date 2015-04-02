@@ -32,6 +32,11 @@ DOWNLOAD_FILES=1
 umount /mingw
 mount /C/Apps/tools/qt-5.4.0/Tools/mingw491_32 /mingw
 
+echo Path $PATH
+
+ls /mingw
+ls /C/Apps/tools/qt-5.4.0/Tools/mingw491_32
+
 ################################################################################
 # wget
 ################################################################################
@@ -45,7 +50,7 @@ wget -P $DOWNLOAD_DIR/ http://zlib.net/zlib-1.2.8.tar.gz
 wget -P $DOWNLOAD_DIR/ http://www.ijg.org/files/jpegsrc.v9a.tar.gz
 wget -P $DOWNLOAD_DIR/ http://sourceforge.net/projects/libpng/files/libpng16/1.6.16/libpng-1.6.16.tar.gz
 wget -P $DOWNLOAD_DIR/ ftp://ftp.remotesensing.org/pub/libtiff/tiff-4.0.3.tar.gz
-wget -P $DOWNLOAD_DIR/ http://sourceforge.net/projects/gnuwin32/files/freetype/2.3.5-1/freetype-2.3.5-1-src.zip
+wget -P $DOWNLOAD_DIR/ http://sourceforge.net/projects/freetype/files/freetype2/2.5.3/freetype-2.5.3.tar.gz
 wget -P $DOWNLOAD_DIR/ http://curl.haxx.se/download/curl-7.38.0.tar.gz
 wget -P $DOWNLOAD_DIR/ http://download.osgeo.org/proj/proj-4.8.0.tar.gz
 wget -P $DOWNLOAD_DIR/ http://download.osgeo.org/proj/proj-datumgrid-1.5.tar.gz
