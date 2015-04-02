@@ -31,6 +31,7 @@ DOWNLOAD_FILES=1
 
 umount /mingw
 mount /C/Apps/tools/qt-5.4.0/Tools/mingw491_32 /mingw
+mount
 
 echo Path $PATH
 
