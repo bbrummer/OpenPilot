@@ -93,7 +93,7 @@ do
         echo "****************************************"
         echo "Downloading $filename"
         echo "****************************************"
-        #wget -P $DOWNLOAD_DIR/ $f
+        wget -P $DOWNLOAD_DIR/ $f
     fi
 done
 
