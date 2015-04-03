@@ -39,6 +39,13 @@
 # See osg_win.sh
 #
 ################################
+# OSX prerequisites
+################################
+#
+# brew install cmake
+# brew install gdal
+#
+################################
 # Building
 ################################
 #
@@ -294,93 +301,3 @@ all_osg: prepare_osg prepare_osgearth osg osgearth install_osg_win package_osg
 else
 all_osg: prepare_osg prepare_osgearth osg osgearth package_osg
 endif
-
-################################
-#
-# windows dependencies
-#
-################################
-
-#ifeq ($(UNAME), Windows)
-#	include $(ROOT_DIR)/make/3rdparty/osgearth_win.mk
-#endif
-
-################################
-#
-# osg and osgearth dependencies (win32 only)
-#
-################################
-
-DEP_SRC_DIR := $(ROOT_DIR)/3rdparty/osg_dependencies
-DEP_DL_DIR := $(DL_DIR)/osg
-DEP_INSTALL_DIR := $(OSGEARTH_INSTALL_DIR)/osg_dependencies
-
-ZLIB_URL := http://zlib.net/zlib-1.2.8.tar.gz
-ZLIB_DIR := $(DEP_SRC_DIR)/zlib-1.2.8
-
-LIBJPEG_URL := http://www.ijg.org/files/jpegsrc.v9a.tar.gz
-LIBJPEG_DIR := $(DEP_SRC_DIR)/jpeg-9a
-
-LIBPNG_URL := http://sourceforge.net/projects/libpng/files/libpng16/1.6.14/libpng-1.6.14.tar.gz
-LIBPNG_DIR := $(DEP_SRC_DIR)/libpng-1.6.14
-
-LIBTIFF_URL := ftp://ftp.remotesensing.org/pub/libtiff/tiff-4.0.3.tar.gz
-LIBTIFF_DIR := $(DEP_SRC_DIR)/tiff-4.0.3
-
-#FREETYPE_URL := http://sourceforge.net/projects/freetype/files/freetype2/2.5.3/freetype-2.5.3.tar.gz
-FREETYPE_URL := http://sourceforge.net/projects/gnuwin32/files/freetype/2.3.5-1/freetype-2.3.5-1-src.zip
-FREETYPE_DIR := $(DEP_SRC_DIR)/tiff-4.0.3
-
-#GLUT_URL := https://www.opengl.org/resources/libraries/glut/glut-3.7.tar.gz
-#GLUT_DIR := $(DEP_SRC_DIR)/glut-3.7
-
-CURL_URL := http://curl.haxx.se/download/curl-7.38.0.tar.gz
-CURL_DIR := $(DEP_SRC_DIR)/curl-7.38.0
-
-PROJ4_URL := http://download.osgeo.org/proj/proj-4.8.0.tar.gz
-PROJ4_DIR := $(DEP_SRC_DIR)/proj-4.8.0
-PROJ4_DATUM_URL := http://download.osgeo.org/proj/proj-datumgrid-1.5.tar.gz
-PROJ4_DATUM_DIR := $(PROJ4_DIR)/nad
-
-GEOS_URL := http://download.osgeo.org/geos/geos-3.3.8.tar.bz2
-GEOS_DIR := $(DEP_SRC_DIR)/geos-3.3.8
-
-GDAL_URL := http://download.osgeo.org/gdal/1.10.1/gdal-1.10.1.tar.gz
-GDAL_DIR := $(DEP_SRC_DIR)/gdal-1.10.1
-
-##############################
-#
-# Cross platform download template
-#  $(1) = Package URL
-#  $(2) = dir name where the package is downloaded to
-#
-##############################
-
-define GET_TEMPLATE
-@$(ECHO) $(MSG_GETTING) $(1)
-	$(V1) ( \
-		$(MKDIR) -p "$(2)" && \
-		if [ ! -f "$(2)/$(notdir $(1))" ]; then \
-			$(ECHO) $(MSG_DOWNLOADING) $(1) to $(2) && \
-			$(CURL) $(CURL_OPTIONS) -o "$(2)/$(notdir $(1))" "$(1)" ; \
-		fi; \
-	)
-endef
-
-.PHONY: osg_win
-osg_win:
-	$(call GET_TEMPLATE,$(ZLIB_URL),$(DEP_DL_DIR))
-	$(call GET_TEMPLATE,$(LIBJPEG_URL),$(DEP_DL_DIR))
-	$(call GET_TEMPLATE,$(LIBPNG_URL),$(DEP_DL_DIR))
-	$(call GET_TEMPLATE,$(LIBTIFF_URL),$(DEP_DL_DIR))
-	$(call GET_TEMPLATE,$(FREETYPE_URL),$(DEP_DL_DIR))
-	$(call GET_TEMPLATE,$(CURL_URL),$(DEP_DL_DIR))
-	$(call GET_TEMPLATE,$(PROJ4_DATUM_URL),$(DEP_DL_DIR))
-	$(call GET_TEMPLATE,$(PROJ4_URL),$(DEP_DL_DIR))
-	$(call GET_TEMPLATE,$(GEOS_URL),$(DEP_DL_DIR))
-	$(call GET_TEMPLATE,$(GDAL_URL),$(DEP_DL_DIR))
-
-.PHONY: install_osg_win
-install_osg_win:
-	$(V1) $(CP) $(BUILD_DIR)/3rdparty/osg_dependencies/bin/*.dll $(OSG_INSTALL_DIR)/bin/
-	$(V1) $(CP) $(BUILD_DIR)/3rdparty/osg_dependencies/lib/*.dll $(OSG_INSTALL_DIR)/bin/
