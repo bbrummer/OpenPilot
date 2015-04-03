@@ -301,3 +301,8 @@ all_osg: prepare_osg prepare_osgearth osg osgearth install_osg_win package_osg
 else
 all_osg: prepare_osg prepare_osgearth osg osgearth package_osg
 endif
+
+.PHONY: install_osg_win
+install_osg_win:
+	$(V1) $(CP) $(BUILD_DIR)/3rdparty/osg_dependencies/bin/*.dll $(OSG_INSTALL_DIR)/bin/
+	$(V1) $(CP) $(BUILD_DIR)/3rdparty/osg_dependencies/lib/*.dll $(OSG_INSTALL_DIR)/bin/
