@@ -111,7 +111,9 @@ prepare_marble: clone_marble
 .PHONY: clone_marble
 clone_marble:
 	$(V1) if [ -d "$(MARBLE_SRC_DIR)" ]; then \
-		$(ECHO) "Checking out osgearth branch $(OSGEARTH_GIT_BRANCH)" ; \
+		$(ECHO) "Cloning restricted maps to $(call toprel, $(MARBLE_SRC_DIR))" ; \
+		$(GIT) clone https://gitorious.org/marble-restricted-maps/googlemaps.git $(MARBLE_SRC_DIR)/googlemaps ; \
+		$(GIT) clone https://gitorious.org/marble-restricted-maps/googlesat.git $(MARBLE_SRC_DIR)/googlesat ; \
 	else \
 		$(MKDIR) -p $(MARBLE_SRC_DIR) ; \
 		$(ECHO) "Cloning marble to $(call toprel, $(MARBLE_SRC_DIR))" ; \
