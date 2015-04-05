@@ -112,7 +112,6 @@ DOXYGEN_DIR    := $(TOOLS_DIR)/doxygen-1.8.3.1
 GTEST_DIR      := $(TOOLS_DIR)/gtest-1.6.0
 
 ifeq ($(UNAME), Linux)
-    CMAKE_DIR := $(TOOLS_DIR)/cmake-2.8.12.2-Linux-i386
     ifeq ($(ARCH), x86_64)
         OSG_SDK_DIR := $(TOOLS_DIR)/osg-3.2.1-linux-x64-qt-5.4.1
     else
@@ -180,7 +179,7 @@ GIT			:= git
 CURL		:= curl
 TAR			:= tar
 UNZIP		:= unzip
-ZIP		:= gzip
+ZIP			:= gzip
 OPENSSL		:= openssl
 ANT			:= ant
 JAVAC		:= javac
@@ -961,7 +960,7 @@ cmake_version:
 
 ##############################
 #
-# msys
+# MSYS
 #
 ##############################
 
