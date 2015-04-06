@@ -1590,7 +1590,7 @@
           <minAmbientLight>0.03</minAmbientLight>
           <modelEnabled>false</modelEnabled>
           <modelSelectionMode>0</modelSelectionMode>
-          <modelFile>%%DATAPATH%%models/multi/test_quad/test_quad_X.3ds</modelFile>
+          <modelFile>%%DATAPATH%%models/multi/test_quad/test_quad_x.3ds</modelFile>
           <backgroundImageFile>%%DATAPATH%%backgrounds/default_background.png</backgroundImageFile>
         </data>
       </PFD__PCT__20__PCT__28No__PCT__20Terrain__PCT__29>
@@ -1604,7 +1604,7 @@
           <altitudeFactor>1</altitudeFactor>
           <speedFactor>1</speedFactor>
           <terrainEnabled>true</terrainEnabled>
-          <earthFile>%%DATAPATH%%osgearth/readymap.earth</earthFile>
+          <earthFile>%%DATAPATH%%osgearth/arcgis.earth</earthFile>
           <cacheOnly>false</cacheOnly>
           <positionMode>0</positionMode>
           <altitude>2000</altitude>
@@ -1615,7 +1615,7 @@
           <minAmbientLight>0.03</minAmbientLight>
           <modelEnabled>false</modelEnabled>
           <modelSelectionMode>1</modelSelectionMode>
-          <modelFile>%%DATAPATH%%models/multi/test_quad/test_quad_X.3ds</modelFile>
+          <modelFile>%%DATAPATH%%models/multi/test_quad/test_quad_x.3ds</modelFile>
           <backgroundImageFile>%%DATAPATH%%backgrounds/default_background.png</backgroundImageFile>
         </data>
       </PFD>
@@ -1640,7 +1640,7 @@
           <minAmbientLight>0.03</minAmbientLight>
           <modelEnabled>true</modelEnabled>
           <modelSelectionMode>1</modelSelectionMode>
-          <modelFile>%%DATAPATH%%models/multi/test_quad/test_quad_X.3ds</modelFile>
+          <modelFile>%%DATAPATH%%models/multi/test_quad/test_quad_x.3ds</modelFile>
           <backgroundImageFile>%%DATAPATH%%backgrounds/default_background.png</backgroundImageFile>
         </data>
       </Model__PCT__20View>
@@ -1665,7 +1665,7 @@
           <minAmbientLight>0.03</minAmbientLight>
           <modelEnabled>true</modelEnabled>
           <modelSelectionMode>1</modelSelectionMode>
-          <modelFile>%%DATAPATH%%models/multi/test_quad/test_quad_X.3ds</modelFile>
+          <modelFile>%%DATAPATH%%models/multi/test_quad/test_quad_x.3ds</modelFile>
           <backgroundImageFile>%%DATAPATH%%backgrounds/default_background.png</backgroundImageFile>
         </data>
       </Model__PCT__20View__PCT__20__PCT__28No__PCT__20Terrain__PCT__29>
@@ -1690,7 +1690,7 @@
           <minAmbientLight>0.03</minAmbientLight>
           <modelEnabled>false</modelEnabled>
           <modelSelectionMode>1</modelSelectionMode>
-          <modelFile>%%DATAPATH%%models/multi/test_quad/test_quad_X.3ds</modelFile>
+          <modelFile>%%DATAPATH%%models/multi/test_quad/test_quad_x.3ds</modelFile>
           <backgroundImageFile>%%DATAPATH%%backgrounds/default_background.png</backgroundImageFile>
         </data>
       </Earth__PCT__20View>
@@ -2352,7 +2352,7 @@
             <side0>
               <classId>PfdQmlGadget</classId>
               <gadget>
-                <activeConfiguration>Model View</activeConfiguration>
+                <activeConfiguration>Model View (No Terrain)</activeConfiguration>
              </gadget>
               <type>uavGadget</type>
             </side0>
