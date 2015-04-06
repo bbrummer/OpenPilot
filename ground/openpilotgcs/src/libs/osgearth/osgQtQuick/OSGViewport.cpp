@@ -66,7 +66,6 @@ public:
         logDepthBuffer(NULL)
     {
         qDebug() << "OSGViewport::Hidden - <init>" << self;
-        OsgEarth::initialize();
         view = createView();
         connect(quickItem, SIGNAL(windowChanged(QQuickWindow *)), this, SLOT(onWindowChanged(QQuickWindow *)));
     }
@@ -268,12 +267,11 @@ public:
         // traitsInfo(*traits);
 
         traits->pbuffer = true;
-        osg::GraphicsContext *graphicsContext = new osgViewer::GraphicsWindowEmbedded(traits);
-        // TODO : do this instead osg::GraphicsContext *graphicsContext = osg::GraphicsContext::createGraphicsContext(traits);
+        osg::GraphicsContext *graphicsContext = osg::GraphicsContext::createGraphicsContext(traits);
         if (!graphicsContext) {
             qWarning() << "Failed to create pbuffer, failing back to normal graphics window.";
             traits->pbuffer = false;
-            graphicsContext = new osgViewer::GraphicsWindowEmbedded(traits);
+            graphicsContext = osg::GraphicsContext::createGraphicsContext(traits);
         }
 
         view->getCamera()->setGraphicsContext(graphicsContext);
