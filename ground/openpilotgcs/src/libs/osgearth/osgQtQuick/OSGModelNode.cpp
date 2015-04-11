@@ -1,11 +1,10 @@
 #include "OSGModelNode.hpp"
+#include "Utility.hpp"
 
 #include <osg/Quat>
 
 #include <osgEarth/MapNode>
 #include <osgEarth/GeoData>
-#include <osgEarth/SpatialReference>
-#include <osgEarth/ElevationQuery>
 
 #include <osgEarthSymbology/Style>
 #include <osgEarthSymbology/ModelSymbol>
@@ -139,45 +138,23 @@ public:
             return;
         }
         dirty = false;
-        modelNode->setPosition(clampToTerrain ? clampedPositionGeoPoint() : positionGeoPoint());
-        modelNode->setLocalRotation(localRotation());
-    }
+        if (clampToTerrain) {
+            osgEarth::MapNode *mapNode  = osgEarth::MapNode::findMapNode(sceneData->node());
+            if (mapNode) {
 
-    osgEarth::GeoPoint positionGeoPoint()
-    {
-        osgEarth::GeoPoint geoPoint(osgEarth::SpatialReference::get("wgs84"),
-                                    position.x(), position.y(), position.z(), osgEarth::ALTMODE_ABSOLUTE);
 
-        return geoPoint;
-    }
 
-    osgEarth::GeoPoint clampedPositionGeoPoint()
-    {
-        osgEarth::GeoPoint geoPoint = positionGeoPoint();
-
-        osgEarth::MapNode *mapNode  = osgEarth::MapNode::findMapNode(sceneData->node());
-
-        if (!mapNode) {
-            qWarning() << "OSGModelNode - updatePositionClamped : scene data does not contain a map node";
-            return geoPoint;
-        }
-
-        // establish an elevation query interface based on the features' SRS.
-        osgEarth::ElevationQuery eq(mapNode->getMap());
-
-        double elevation;
-        if (eq.getElevation(geoPoint, elevation, 0.0)) {
-            // TODO need to notify intoTerrainChanged...
-            intoTerrain = ((position.z() - modelNode->getBound().radius()) < elevation);
-            if (intoTerrain) {
-                qDebug() << "OSGModelNode - updatePositionClamped : clamping" << position.z() - modelNode->getBound().radius() << "/" << elevation;
-                geoPoint = osgEarth::GeoPoint(osgEarth::SpatialReference::get("wgs84"), position.x(), position.y(),
-                                              position.z() + modelNode->getBound().radius(), osgEarth::ALTMODE_ABSOLUTE);
+                double offset = modelNode->getBound().radius();
+                modelNode->setPosition(clampGeoPoint(position, offset, mapNode, intoTerrain));
             }
-        } else {
-            qDebug() << "OSGModelNode - updatePositionClamped : failed to get elevation";;
+            else {
+                qWarning() << "OSGModelNode - updateNode : scene data does not contain a map node";
+            }
         }
-        return geoPoint;
+        else {
+            modelNode->setPosition(osgQtQuick::toGeoPoint(position));
+        }
+        modelNode->setLocalRotation(localRotation());
     }
 
     osg::Quat localRotation()
@@ -196,10 +173,6 @@ public:
     OSGNode *sceneData;
 
     osg::ref_ptr<osgEarth::Annotation::ModelNode> modelNode;
-    // osg::ref_ptr<osg::Node> cameraNode;
-    osg::ref_ptr<NodeUpdateCallback> nodeUpdateCallback;
-
-    bool dirty;
 
     bool clampToTerrain;
 
@@ -208,6 +181,10 @@ public:
 
     bool intoTerrain;
 
+    // handle attitude/position/etc independently
+    bool dirty;
+
+    osg::observer_ptr<NodeUpdateCallback> nodeUpdateCallback;
 private slots:
 
     void onModelNodeChanged(osg::Node *node)
