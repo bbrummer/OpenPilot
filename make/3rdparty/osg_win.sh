@@ -88,7 +88,7 @@ for f in $SRC_FILES
 do
     filename=$(basename "$f")
     #extension="${filename##*.}"
-    filename="${filename%.*}"
+    #filename="${filename%.*}"
     if [ ! -f $DOWNLOAD_DIR/$filename ]; then
         echo "****************************************"
         echo "Downloading $filename"
