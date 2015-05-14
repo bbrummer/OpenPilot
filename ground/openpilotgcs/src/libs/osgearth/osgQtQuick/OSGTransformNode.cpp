@@ -30,7 +30,7 @@ public:
 
     bool acceptModelData(OSGNode *node)
     {
-        qDebug() << "OSGTransformNode - acceptModelData" << node;
+        qDebug() << "OSGTransformNode::acceptModelData" << node;
         if (modelData == node) {
             return false;
         }
@@ -51,21 +51,24 @@ public:
 
     bool acceptNode(osg::Node *node)
     {
-        qDebug() << "OSGTransformNode acceptNode" << node;
+        qDebug() << "OSGTransformNode::acceptNode" << node;
         if (!node) {
-            qWarning() << "OSGTransformNode - acceptNode - node is null";
+            qWarning() << "OSGTransformNode::acceptNode - node is null";
             return false;
         }
 
         osg::Transform *transform = getOrCreateTransform();
         if (!transform) {
-            qWarning() << "OSGTransformNode - acceptNode - transform is null";
+            qWarning() << "OSGTransformNode::acceptNode - transform is null";
             return false;
         }
 
         transform->addChild(node);
 
         self->setNode(transform);
+
+        dirty = true;
+        updateNode();
 
         return true;
     }
@@ -79,9 +82,6 @@ public:
         transform = new osg::PositionAttitudeTransform();
 
         transform->addUpdateCallback(new NodeUpdateCallback(this));
-
-        dirty = true;
-        updateNode();
 
         return transform.get();
     }
@@ -127,7 +127,7 @@ private slots:
 
     void onNodeChanged(osg::Node *node)
     {
-        qDebug() << "OSGTransformNode - onNodeChanged" << node;
+        qDebug() << "OSGTransformNode::onNodeChanged" << node;
         acceptNode(node);
     }
 };
@@ -142,12 +142,12 @@ void OSGTransformNode::Hidden::NodeUpdateCallback::operator()(osg::Node *node, o
 
 OSGTransformNode::OSGTransformNode(QObject *parent) : OSGNode(parent), h(new Hidden(this))
 {
-    qDebug() << "OSGTransformNode - <init>";
+    qDebug() << "OSGTransformNode::OSGTransformNode";
 }
 
 OSGTransformNode::~OSGTransformNode()
 {
-    qDebug() << "OSGTransformNode - <destruct>";
+    qDebug() << "OSGTransformNode::~OSGTransformNode";
 }
 
 OSGNode *OSGTransformNode::modelData()

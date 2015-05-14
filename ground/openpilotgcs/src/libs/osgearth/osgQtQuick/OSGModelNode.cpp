@@ -37,7 +37,7 @@ public:
 
     bool acceptModelData(OSGNode *node)
     {
-        qDebug() << "OSGModelNode - acceptModelData" << node;
+        qDebug() << "OSGModelNode::acceptModelData" << node;
         if (modelData == node) {
             return false;
         }
@@ -56,23 +56,22 @@ public:
         return true;
     }
 
-
     bool acceptModelNode(osg::Node *node)
     {
-        qDebug() << "OSGModelNode acceptModelNode" << node;
+        qDebug() << "OSGModelNode::acceptModelNode" << node;
         if (!node) {
-            qWarning() << "OSGModelNode - acceptModelNode - node is null";
+            qWarning() << "OSGModelNode::acceptModelNode - node is null";
             return false;
         }
 
         if (!sceneData || !sceneData->node()) {
-            qWarning() << "OSGModelNode - acceptModelNode - no scene data";
+            qWarning() << "OSGModelNode::acceptModelNode - no scene data";
             return false;
         }
 
         osgEarth::MapNode *mapNode = osgEarth::MapNode::findMapNode(sceneData->node());
         if (!mapNode) {
-            qWarning() << "OSGModelNode - acceptModelNode - scene data does not contain a map node";
+            qWarning() << "OSGModelNode::acceptModelNode - scene data does not contain a map node";
             return false;
         }
 
@@ -91,7 +90,7 @@ public:
         // make a ModelNode
         modelNode = new osgEarth::Annotation::ModelNode(mapNode, style);
 
-        qDebug() << "OSGModelNode - acceptModelNode - model radius:" << modelNode->getBound().radius();
+        // qDebug() << "OSGModelNode::acceptModelNode - model radius:" << modelNode->getBound().radius();
 
         if (!nodeUpdateCallback.valid()) {
             nodeUpdateCallback = new NodeUpdateCallback(this);
@@ -109,7 +108,7 @@ public:
 
     bool acceptSceneData(OSGNode *node)
     {
-        qDebug() << "OSGModelNode - acceptSceneData" << node;
+        qDebug() << "OSGModelNode::acceptSceneData" << node;
         if (sceneData == node) {
             return false;
         }
@@ -139,19 +138,14 @@ public:
         }
         dirty = false;
         if (clampToTerrain) {
-            osgEarth::MapNode *mapNode  = osgEarth::MapNode::findMapNode(sceneData->node());
+            osgEarth::MapNode *mapNode = osgEarth::MapNode::findMapNode(sceneData->node());
             if (mapNode) {
-
-
-
                 double offset = modelNode->getBound().radius();
                 modelNode->setPosition(clampGeoPoint(position, offset, mapNode, intoTerrain));
+            } else {
+                qWarning() << "OSGModelNode::updateNode - scene data does not contain a map node";
             }
-            else {
-                qWarning() << "OSGModelNode - updateNode : scene data does not contain a map node";
-            }
-        }
-        else {
+        } else {
             modelNode->setPosition(osgQtQuick::toGeoPoint(position));
         }
         modelNode->setLocalRotation(localRotation());
@@ -185,11 +179,12 @@ public:
     bool dirty;
 
     osg::observer_ptr<NodeUpdateCallback> nodeUpdateCallback;
+
 private slots:
 
     void onModelNodeChanged(osg::Node *node)
     {
-        qDebug() << "OSGModelNode - onModelNodeChanged" << node;
+        qDebug() << "OSGModelNode::onModelNodeChanged" << node;
         if (modelData) {
             if (modelNode.valid()) {
                 osgEarth::MapNode *mapNode = osgEarth::MapNode::findMapNode(sceneData->node());
@@ -208,7 +203,7 @@ private slots:
 
     void onSceneNodeChanged(osg::Node *node)
     {
-        qDebug() << "OSGModelNode - onSceneNodeChanged" << node;
+        qDebug() << "OSGModelNode::onSceneNodeChanged" << node;
         // TODO needs to be improved...
         if (modelData) {
             if (modelNode.valid()) {
@@ -237,12 +232,12 @@ void OSGModelNode::Hidden::NodeUpdateCallback::operator()(osg::Node *node, osg::
 
 OSGModelNode::OSGModelNode(QObject *parent) : OSGNode(parent), h(new Hidden(this))
 {
-    qDebug() << "OSGModelNode - <init>";
+    qDebug() << "OSGModelNode::OSGModelNode";
 }
 
 OSGModelNode::~OSGModelNode()
 {
-    qDebug() << "OSGModelNode - <destruct>";
+    qDebug() << "OSGModelNode::~OSGModelNode";
 }
 
 OSGNode *OSGModelNode::modelData()
