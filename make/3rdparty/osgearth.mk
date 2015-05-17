@@ -157,16 +157,19 @@ prepare_osg: clone_osg
 
 .PHONY: clone_osg
 clone_osg:
-	$(V1) if [ -d "$(OSG_SRC_DIR)" ]; then \
-		$(ECHO) "Checking out osg branch $(OSG_GIT_BRANCH)" ; \
-		( $(CD) $(OSG_SRC_DIR) && \
-			$(GIT) fetch origin $(OSG_GIT_BRANCH) && \
-			$(GIT) checkout $(OSG_GIT_BRANCH) ; \
-		); \
+	$(V1) if [ ! -d "$(OSG_SRC_DIR)" ]; then \
+		$(ECHO) "Cloning osg..." ; \
+		$(GIT) clone git://github.com/openscenegraph/osg.git $(OSG_SRC_DIR) ; \
 	else \
-		$(ECHO) "Cloning osg branch $(OSG_GIT_BRANCH) to $(call toprel, $(OSG_SRC_DIR))" ; \
-		$(GIT) clone git://github.com/openscenegraph/osg.git -b $(OSG_GIT_BRANCH) $(OSG_SRC_DIR) ; \
+		$(ECHO) "Fetching osg..." ; \
+		( $(CD) $(OSG_SRC_DIR) && \
+			$(GIT) fetch ; \
+		) \
 	fi
+	@$(ECHO) "Checking out osg branch $(OSG_GIT_BRANCH)"
+	$(V1)( $(CD) $(OSG_SRC_DIR) && \
+		$(GIT) checkout --quiet $(OSG_GIT_BRANCH) ; \
+	)
 
 .PHONY: clean_osg
 clean_osg:
@@ -264,16 +267,19 @@ prepare_osgearth: clone_osgearth
 
 .PHONY: clone_osgearth
 clone_osgearth:
-	$(V1) if [ -d "$(OSGEARTH_SRC_DIR)" ]; then \
-		$(ECHO) "Checking out osgearth branch $(OSGEARTH_GIT_BRANCH)" ; \
-		( $(CD) $(OSGEARTH_SRC_DIR) && \
-			$(GIT) fetch origin $(OSGEARTH_GIT_BRANCH) && \
-			$(GIT) checkout $(OSGEARTH_GIT_BRANCH) ; \
-		); \
+	$(V1) if [ ! -d "$(OSGEARTH_SRC_DIR)" ]; then \
+		$(ECHO) "Cloning osgearth..." ; \
+		$(GIT) clone git://github.com/gwaldron/osgearth.git $(OSGEARTH_SRC_DIR) ; \
 	else \
-		$(ECHO) "Cloning osgearth branch $(OSGEARTH_GIT_BRANCH) to $(call toprel, $(OSGEARTH_SRC_DIR))" ; \
-		$(GIT) clone git://github.com/gwaldron/osgearth.git -b $(OSGEARTH_GIT_BRANCH) $(OSGEARTH_SRC_DIR) ; \
+		$(ECHO) "Fetching osgearth..." ; \
+		( $(CD) $(OSGEARTH_SRC_DIR) && \
+			$(GIT) fetch ; \
+		) \
 	fi
+	@$(ECHO) "Checking out osgearth branch $(OSGEARTH_GIT_BRANCH)"
+	$(V1)( $(CD) $(OSGEARTH_SRC_DIR) && \
+		$(GIT) checkout --quiet $(OSGEARTH_GIT_BRANCH) ; \
+	)
 
 .PHONY: clean_osgearth
 clean_osgearth:
