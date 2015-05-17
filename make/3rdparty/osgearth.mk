@@ -88,8 +88,11 @@ OSG_NAME_SUFIX := -qt-$(QT_VERSION)
 #
 ################################
 
-OSG_VERSION     := 3.2.1
-OSG_GIT_BRANCH  := OpenSceneGraph-$(OSG_VERSION)
+#OSG_VERSION     := 3.2.1
+#OSG_GIT_BRANCH  := OpenSceneGraph-$(OSG_VERSION)
+OSG_VERSION     := 2705fde9e4
+OSG_GIT_BRANCH  := $(OSG_VERSION)
+
 OSG_BASE_NAME   := osg-$(OSG_VERSION)
 
 ifeq ($(UNAME), Linux)
@@ -193,8 +196,11 @@ clean_all_osg: clean_osg
 # fix Debug build
 # add option to not build the applications (in Debug mode in particular)
 
-OSGEARTH_VERSION     := 2.6
-OSGEARTH_GIT_BRANCH  := osgearth-$(OSGEARTH_VERSION)
+#OSGEARTH_VERSION     := 2.6
+#OSGEARTH_GIT_BRANCH  := osgearth-$(OSGEARTH_VERSION)
+OSGEARTH_VERSION     := dd4be53f24a
+OSGEARTH_GIT_BRANCH  := $(OSGEARTH_VERSION)
+
 OSGEARTH_BASE_NAME   := osgearth-$(OSGEARTH_VERSION)
 OSGEARTH_BUILD_CONF  := $(OSG_BUILD_CONF)
 
