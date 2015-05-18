@@ -4,7 +4,7 @@
 : ${ROOT_DIR?} ${BUILD_DIR?} ${PACKAGE_LBL?} ${PACKAGE_DIR?} ${PACKAGE_NAME?} ${PACKAGE_SEP?}
 
 # more variables
-APP_PATH="${BUILD_DIR}/openpilotgcs_release/OpenPilot GCS.app"
+APP_PATH="${BUILD_DIR}/${GCS_SMALL_NAME}_release/${GCS_BIG_NAME}.app"
 OUT_FILE="${PACKAGE_DIR}/../${PACKAGE_NAME}${PACKAGE_SEP}${PACKAGE_LBL}${PACKAGE_SEP}osx.dmg"
 
 SRC_DIR="${PACKAGE_DIR}/src"
@@ -31,7 +31,7 @@ cp "${ROOT_DIR}/LICENSE.txt" "${SRC_DIR}/Docs/"
 cp "${ROOT_DIR}/GPLv3.txt" "${SRC_DIR}/Docs/"
 
 "${ROOT_DIR}/package/osx/libraries" \
-    "${SRC_DIR}/OpenPilot GCS.app" || exit 1
+    "${SRC_DIR}/${GCS_BIG_NAME}.app" || exit 1
 
 "${ROOT_DIR}/package/osx/create-dmg/create-dmg" \
 --volname "${VOL_NAME}" \
