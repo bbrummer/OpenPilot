@@ -31,11 +31,11 @@ MARBLE_NAME_SUFIX := -qt-$(QT_VERSION)
 #
 ################################
 
-MARBLE_BUILD_CONF := Release
 MARBLE_VERSION   := master
-
 MARBLE_GIT_BRANCH := $(MARBLE_VERSION)
+
 MARBLE_BASE_NAME := marble-$(MARBLE_VERSION)
+MARBLE_BUILD_CONF := Release
 
 ifeq ($(UNAME), Linux)
 	ifeq ($(ARCH), x86_64)
@@ -61,11 +61,12 @@ else ifeq ($(UNAME), Windows)
 	MARBLE_BUILD_PATH := "$(TOOLS_DIR)/bin;$(QT_SDK_PREFIX)/bin;$(MINGW_DIR)/bin;$$SYSTEMROOT/System32"
 endif
 
-MARBLE_NAME := $(MARBLE_NAME_PREFIX)$(MARBLE_NAME)$(MARBLE_NAME_SUFIX)
+MARBLE_NAME        := $(MARBLE_NAME_PREFIX)$(MARBLE_NAME)$(MARBLE_NAME_SUFIX)
 MARBLE_SRC_DIR     := $(ROOT_DIR)/3rdparty/marble
 MARBLE_BUILD_DIR   := $(BUILD_DIR)/3rdparty/$(MARBLE_NAME)
 MARBLE_INSTALL_DIR := $(BUILD_DIR)/3rdparty/install/$(MARBLE_NAME)
-MARBLE_DATA_DIR := $(MARBLE_INSTALL_DIR)/$(MARBLE_DATA_BASE_DIR)
+MARBLE_DATA_DIR    := $(MARBLE_INSTALL_DIR)/$(MARBLE_DATA_BASE_DIR)
+MARBLE_PATCH_FILE  := $(ROOT_DIR)/make/3rdparty/marble-$(MARBLE_VERSION)_patch.diff
 
 .PHONY: marble
 marble:
@@ -110,18 +111,36 @@ prepare_marble: clone_marble
 
 .PHONY: clone_marble
 clone_marble:
-	$(V1) if [ -d "$(MARBLE_SRC_DIR)" ]; then \
-		$(ECHO) "Cloning restricted maps to $(call toprel, $(MARBLE_SRC_DIR))" ; \
+	$(V1) if [ ! -d "$(MARBLE_SRC_DIR)" ]; then \
+		$(ECHO) "Cloning marble..." ; \
+		$(GIT) clone --no-checkout git://anongit.kde.org/marble $(MARBLE_SRC_DIR) ; \
+	fi
+	@$(ECHO) "Fetching marble..."
+	$(V1) ( $(CD) $(MARBLE_SRC_DIR) && $(GIT) fetch ; )
+	@$(ECHO) "Checking out marble branch $(MARBLE_GIT_BRANCH)"
+	$(V1) ( $(CD) $(MARBLE_SRC_DIR) && $(GIT) checkout --quiet --force $(MARBLE_GIT_BRANCH) ; )
+	$(V1) if [ -e $(MARBLE_PATCH_FILE) ]; then \
+		$(ECHO) "Patching marble..." ; \
+		( $(CD) $(MARBLE_SRC_DIR) && $(GIT) apply $(MARBLE_PATCH_FILE) ; ) \
+	fi
+
+	$(V1) if [ ! -d "$(MARBLE_SRC_DIR)/googlemaps" ]; then \
+		$(ECHO) "Cloning googlemaps to $(call toprel, $(MARBLE_SRC_DIR)/googlemaps)" ; \
 		$(GIT) clone https://gitorious.org/marble-restricted-maps/googlemaps.git $(MARBLE_SRC_DIR)/googlemaps ; \
-		$(GIT) clone https://gitorious.org/marble-restricted-maps/googlesat.git $(MARBLE_SRC_DIR)/googlesat ; \
-	else \
-		$(MKDIR) -p $(MARBLE_SRC_DIR) ; \
-		$(ECHO) "Cloning marble to $(call toprel, $(MARBLE_SRC_DIR))" ; \
-		$(GIT) clone -b $(MARBLE_GIT_BRANCH) git://anongit.kde.org/marble $(MARBLE_SRC_DIR) ; \
-		$(ECHO) "Cloning restricted maps to $(call toprel, $(MARBLE_SRC_DIR))" ; \
-		$(GIT) clone https://gitorious.org/marble-restricted-maps/googlemaps.git $(MARBLE_SRC_DIR)/googlemaps ; \
+	fi
+	@$(ECHO) "Fetching googlemaps..."
+	$(V1) ( $(CD) $(MARBLE_SRC_DIR)/googlemaps && $(GIT) fetch ; )
+	@$(ECHO) "Checking out googlemaps"
+	$(V1) ( $(CD) $(MARBLE_SRC_DIR)/googlemaps && $(GIT) checkout --quiet --force master ; )
+
+	$(V1) if [ ! -d "$(MARBLE_SRC_DIR)/googlesat" ]; then \
+		$(ECHO) "Cloning googlesat to $(call toprel, $(MARBLE_SRC_DIR)/googlesat)" ; \
 		$(GIT) clone https://gitorious.org/marble-restricted-maps/googlesat.git $(MARBLE_SRC_DIR)/googlesat ; \
 	fi
+	@$(ECHO) "Fetching googlesat..."
+	$(V1) ( $(CD) $(MARBLE_SRC_DIR)/googlesat && $(GIT) fetch ; )
+	@$(ECHO) "Checking out googlesat"
+	$(V1) ( $(CD) $(MARBLE_SRC_DIR)/googlesat && $(GIT) checkout --quiet --force master ; )
 
 .PHONY: clean_marble
 clean_marble:
@@ -138,3 +157,4 @@ clean_all_marble: clean_marble
 .NOTPARALLEL:
 .PHONY: all_marble
 all_marble: prepare_marble marble package_marble
+
