@@ -163,22 +163,15 @@ prepare_osg: clone_osg
 clone_osg:
 	$(V1) if [ ! -d "$(OSG_SRC_DIR)" ]; then \
 		$(ECHO) "Cloning osg..." ; \
-		$(GIT) clone git://github.com/openscenegraph/osg.git $(OSG_SRC_DIR) ; \
-	else \
-		$(ECHO) "Fetching osg..." ; \
-		( $(CD) $(OSG_SRC_DIR) && \
-			$(GIT) fetch ; \
-		) \
+		$(GIT) clone -no-checkout git://github.com/openscenegraph/osg.git $(OSG_SRC_DIR) ; \
 	fi
+	@$(ECHO) "Fetching osg..."
+	$(V1) ( $(CD) $(OSG_SRC_DIR) && $(GIT) fetch ; )
 	@$(ECHO) "Checking out osg branch $(OSG_GIT_BRANCH)"
-	$(V1)( $(CD) $(OSG_SRC_DIR) && \
-		$(GIT) checkout --quiet --force $(OSG_GIT_BRANCH) ; \
-	)
+	$(V1) ( $(CD) $(OSG_SRC_DIR) && $(GIT) checkout --quiet --force $(OSG_GIT_BRANCH) ; )
 	$(V1) if [ -e $(OSG_PATCH_FILE) ]; then \
 		$(ECHO) "Patching osg..." ; \
-		( $(CD) $(OSG_SRC_DIR) && \
-			$(GIT) apply $(OSG_PATCH_FILE) ; \
-		) \
+		( $(CD) $(OSG_SRC_DIR) && $(GIT) apply $(OSG_PATCH_FILE) ; ) \
 	fi
 
 .PHONY: clean_osg
@@ -283,22 +276,15 @@ prepare_osgearth: clone_osgearth
 clone_osgearth:
 	$(V1) if [ ! -d "$(OSGEARTH_SRC_DIR)" ]; then \
 		$(ECHO) "Cloning osgearth..." ; \
-		$(GIT) clone git://github.com/gwaldron/osgearth.git $(OSGEARTH_SRC_DIR) ; \
-	else \
-		$(ECHO) "Fetching osgearth..." ; \
-		( $(CD) $(OSGEARTH_SRC_DIR) && \
-			$(GIT) fetch ; \
-		) \
+		$(GIT) clone --no-checkout git://github.com/gwaldron/osgearth.git $(OSGEARTH_SRC_DIR) ; \
 	fi
+	@$(ECHO) "Fetching osgearth..."
+	$(V1) ( $(CD) $(OSGEARTH_SRC_DIR) && $(GIT) fetch ; )
 	@$(ECHO) "Checking out osgearth branch $(OSGEARTH_GIT_BRANCH)"
-	$(V1)( $(CD) $(OSGEARTH_SRC_DIR) && \
-		$(GIT) checkout --quiet --force $(OSGEARTH_GIT_BRANCH) ; \
-	)
+	$(V1)( $(CD) $(OSGEARTH_SRC_DIR) && $(GIT) checkout --quiet --force $(OSGEARTH_GIT_BRANCH) ; )
 	$(V1) if [ -f "$(OSGEARTH_PATCH_FILE)" ]; then \
 		$(ECHO) "Patching osgearth..." ; \
-		( $(CD) $(OSGEARTH_SRC_DIR) && \
-			$(GIT) apply $(OSGEARTH_PATCH_FILE) ; \
-		) \
+		( $(CD) $(OSGEARTH_SRC_DIR) && $(GIT) apply $(OSGEARTH_PATCH_FILE) ; ) \
 	fi
 
 .PHONY: clean_osgearth
