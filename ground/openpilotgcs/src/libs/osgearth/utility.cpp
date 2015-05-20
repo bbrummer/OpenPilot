@@ -1,17 +1,17 @@
-#include "Utility.hpp"
+#include "utility.h"
 
 // osgQtQuick qml types
-#include "OSGNode.hpp"
-#include "OSGGroup.hpp"
-#include "OSGFileNode.hpp"
-#include "OSGTransformNode.hpp"
-#include "OSGCubeNode.hpp"
-#include "OSGTextNode.hpp"
-#include "OSGModelNode.hpp"
-#include "OSGBackgroundNode.hpp"
-#include "OSGSkyNode.hpp"
-#include "OSGCamera.hpp"
-#include "OSGViewport.hpp"
+#include "osgQtQuick/OSGNode.hpp"
+#include "osgQtQuick/OSGGroup.hpp"
+#include "osgQtQuick/OSGFileNode.hpp"
+#include "osgQtQuick/OSGTransformNode.hpp"
+#include "osgQtQuick/OSGCubeNode.hpp"
+#include "osgQtQuick/OSGTextNode.hpp"
+#include "osgQtQuick/OSGModelNode.hpp"
+#include "osgQtQuick/OSGBackgroundNode.hpp"
+#include "osgQtQuick/OSGSkyNode.hpp"
+#include "osgQtQuick/OSGCamera.hpp"
+#include "osgQtQuick/OSGViewport.hpp"
 
 #include <osg/NodeCallback>
 #include <osg/Camera>
@@ -34,6 +34,8 @@
 
 #include <QFont>
 #include <QKeyEvent>
+#include <QCoreApplication>
+#include <QThread>
 
 namespace osgQtQuick {
 class CullCallback : public osg::NodeCallback {
@@ -227,19 +229,18 @@ osgEarth::GeoPoint toGeoPoint(const QVector3D &position)
     return geoPoint;
 }
 
-osgEarth::GeoPoint clampGeoPoint(const QVector3D &position, float offset, osgEarth::MapNode *mapNode, bool &clamped)
+bool clampGeoPoint(osgEarth::GeoPoint &geoPoint, float offset, osgEarth::MapNode *mapNode)
 {
-    osgEarth::GeoPoint geoPoint = toGeoPoint(position);
-
     if (!mapNode) {
-        qWarning() << "Utility::clampGeoPoint - scene data does not contain a map node";
-        return geoPoint;
+        qWarning() << "Utility::clampGeoPoint - null map node";
+        return false;
     }
 
     // establish an elevation query interface based on the features' SRS.
     osgEarth::ElevationQuery eq(mapNode->getMap());
     // qDebug() << "Utility::clampGeoPoint - SRS :" << QString::fromStdString(mapNode->getMap()->getSRS()->getName());
 
+    bool clamped = false;
     double elevation;
     if (eq.getElevation(geoPoint, elevation, 0.0)) {
         clamped = ((geoPoint.z() - offset) < elevation);
@@ -251,7 +252,7 @@ osgEarth::GeoPoint clampGeoPoint(const QVector3D &position, float offset, osgEar
         qDebug() << "Utility::clampGeoPoint - failed to get elevation";
     }
 
-    return geoPoint;
+    return clamped;
 }
 
 QSurfaceFormat traitsToFormat(const osg::GraphicsContext::Traits *traits)
@@ -307,6 +308,7 @@ void openGLContextInfo(QOpenGLContext *context, const char *at)
         qDebug() << "share context :" << context->shareContext();
         // formatInfo(context->format());
     }
+    qDebug() << "thread        :" << QThread::currentThread() << " / " << QCoreApplication::instance()->thread();
     qDebug() << "--------------------------------------------------------------------";
 }
 

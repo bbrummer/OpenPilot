@@ -1,10 +1,10 @@
 #include "OSGViewport.hpp"
 
 #include "../osgearth.h"
+#include "../utility.h"
 
 #include "OSGNode.hpp"
 #include "OSGCamera.hpp"
-#include "Utility.hpp"
 
 #include <osg/Node>
 #include <osg/DeleteHandler>
@@ -145,7 +145,7 @@ public:
         }
         if (camera) {
             camera->setViewport(0, 0, self->width(), self->height());
-            camera->attachView(view);
+            camera->attach(view);
         } else {
             qWarning() << "OSGViewport::attach - no camera!";
         }
@@ -177,13 +177,6 @@ public:
             view->getCamera()->addCullCallback(cullCallback);
         }
 
-        // TODO sky handling should not be done here
-        osgEarth::Util::SkyNode *skyNode = osgQtQuick::findTopMostNodeOfType<osgEarth::Util::SkyNode>(node);
-        if (skyNode) {
-            // qDebug() << "OSGViewport::attach - found sky node" << skyNode;
-            skyNode->attach(view, 0);
-        }
-
         view->setSceneData(node);
 
         return true;
@@ -194,7 +187,7 @@ public:
         qDebug() << "OSGViewport::detach" << view;
 
         if (camera) {
-            camera->detachView(view);
+            camera->detach(view);
         }
 
         osgEarth::MapNode *mapNode = osgEarth::MapNode::findMapNode(view->getSceneData());
@@ -236,7 +229,7 @@ public:
         if (!view.valid()) {
             qDebug() << "OSGViewport::initializeResources - creating view";
             view = createView();
-            attach(view.get());
+            self->attach(view.get());
             viewer->addView(view);
             start();
             // osgDB::writeNodeFile(*(h->self->sceneData()->node()), "saved.osg");
@@ -637,16 +630,41 @@ QQuickFramebufferObject::Renderer *OSGViewport::createRenderer() const
     return new ViewportRenderer(h);
 }
 
-void OSGViewport::realize()
+bool OSGViewport::attach(osgViewer::View *view)
 {
-    qDebug() << "OSGViewport::realize";
+    qDebug() << "OSGViewport::attach" << view;
+
+    h->attach(view);
+
     QListIterator<QObject *> i(children());
     while (i.hasNext()) {
-        OSGNode *node = qobject_cast<OSGNode *>(i.next());
+        QObject *object= i.next();
+        OSGNode *node = qobject_cast<OSGNode *>(object);
         if (node) {
-            node->realize();
+            qDebug() << "OSGViewport::attach - child" << node;
+            node->attach(view);
         }
     }
+
+    return true;
+}
+
+bool OSGViewport::detach(osgViewer::View *view)
+{
+    qDebug() << "OSGViewport::detach" << view;
+
+    QListIterator<QObject *> i(children());
+    while (i.hasNext()) {
+        QObject *object= i.next();
+        OSGNode *node = qobject_cast<OSGNode *>(object);
+        if (node) {
+            node->detach(view);
+        }
+    }
+
+    h->detach(view);
+
+    return true;
 }
 
 void OSGViewport::releaseResources()

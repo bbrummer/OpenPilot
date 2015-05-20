@@ -1,5 +1,7 @@
 #include "OSGSkyNode.hpp"
 
+#include <osgViewer/View>
+
 #include <osgEarth/Config>
 #include <osgEarth/DateTime>
 #include <osgEarth/MapNode>
@@ -144,10 +146,26 @@ public:
         // TODO should be done in a node visitor...
         if (skyNode) {
             double d = minimumAmbientLight;
-            skyNode->getSunLight()->setAmbient(osg::Vec4(d, d, d, 1.0f));
-            // skyNode->setMinimumAmbient(osg::Vec4f(0.8f, 0.8f, 0.8f, 1.0f));
+            //skyNode->getSunLight()->setAmbient(osg::Vec4(d, d, d, 1.0f));
+            skyNode->setMinimumAmbient(osg::Vec4(d, d, d, 1.0f));
         }
 
+        return true;
+    }
+
+    bool attach(osgViewer::View *view)
+    {
+        if (!skyNode.valid()) {
+            qWarning() << "OSGSkyNode::attach - invalid sky node" << skyNode;
+            return false;
+        }
+        skyNode->attach(view, 0);
+        return true;
+    }
+
+    bool detach(osgViewer::View *view)
+    {
+        qWarning() << "OSGSkyNode::detach - not implemented";
         return true;
     }
 
@@ -225,6 +243,16 @@ void OSGSkyNode::setMinimumAmbientLight(double arg)
     if (h->acceptMinimumAmbientLight(arg)) {
         emit minimumAmbientLightChanged(minimumAmbientLight());
     }
+}
+
+bool OSGSkyNode::attach(osgViewer::View *view)
+{
+    return h->attach(view);
+}
+
+bool OSGSkyNode::detach(osgViewer::View *view)
+{
+    return h->detach(view);
 }
 } // namespace osgQtQuick
 

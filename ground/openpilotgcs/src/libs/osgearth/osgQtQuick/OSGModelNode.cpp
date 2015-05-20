@@ -1,5 +1,6 @@
 #include "OSGModelNode.hpp"
-#include "Utility.hpp"
+
+#include "../utility.h"
 
 #include <osg/Quat>
 
@@ -29,8 +30,9 @@ public:
 
 public:
 
-    Hidden(OSGModelNode *parent) : QObject(parent), self(parent), modelData(NULL), sceneData(NULL), dirty(false)
-    {}
+    Hidden(OSGModelNode *parent) : QObject(parent), self(parent), modelData(NULL), sceneData(NULL), clampToTerrain(false), dirty(false)
+    {
+    }
 
     ~Hidden()
     {}
@@ -137,17 +139,23 @@ public:
             return;
         }
         dirty = false;
+
+        osgEarth::GeoPoint geoPoint = osgQtQuick::toGeoPoint(position);
         if (clampToTerrain) {
             osgEarth::MapNode *mapNode = osgEarth::MapNode::findMapNode(sceneData->node());
             if (mapNode) {
-                double offset = modelNode->getBound().radius();
-                modelNode->setPosition(clampGeoPoint(position, offset, mapNode, intoTerrain));
+                // TODO offset sometimes jitters badly...
+                float offset = 1.0f;
+                if (modelNode.valid()) {
+                    offset = modelNode->getBound().radius();
+                }
+                //qDebug() << "OSGModelNode::updateNode - model node bounds" << offset;
+                intoTerrain = clampGeoPoint(geoPoint, offset, mapNode);
             } else {
                 qWarning() << "OSGModelNode::updateNode - scene data does not contain a map node";
             }
-        } else {
-            modelNode->setPosition(osgQtQuick::toGeoPoint(position));
         }
+        modelNode->setPosition(geoPoint);
         modelNode->setLocalRotation(localRotation());
     }
 
@@ -169,11 +177,10 @@ public:
     osg::ref_ptr<osgEarth::Annotation::ModelNode> modelNode;
 
     bool clampToTerrain;
+    bool intoTerrain;
 
     QVector3D attitude;
     QVector3D position;
-
-    bool intoTerrain;
 
     // handle attitude/position/etc independently
     bool dirty;
@@ -278,6 +285,11 @@ void OSGModelNode::setClampToTerrain(bool arg)
     }
 }
 
+bool OSGModelNode::intoTerrain() const
+{
+    return h->intoTerrain;
+}
+
 QVector3D OSGModelNode::attitude() const
 {
     return h->attitude;
@@ -304,11 +316,6 @@ void OSGModelNode::setPosition(QVector3D arg)
         h->dirty    = true;
         emit positionChanged(position());
     }
-}
-
-bool OSGModelNode::intoTerrain() const
-{
-    return h->intoTerrain;
 }
 } // namespace osgQtQuick
 
