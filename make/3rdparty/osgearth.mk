@@ -163,7 +163,7 @@ prepare_osg: clone_osg
 clone_osg:
 	$(V1) if [ ! -d "$(OSG_SRC_DIR)" ]; then \
 		$(ECHO) "Cloning osg..." ; \
-		$(GIT) clone -no-checkout git://github.com/openscenegraph/osg.git $(OSG_SRC_DIR) ; \
+		$(GIT) clone --no-checkout git://github.com/openscenegraph/osg.git $(OSG_SRC_DIR) ; \
 	fi
 	@$(ECHO) "Fetching osg..."
 	$(V1) ( $(CD) $(OSG_SRC_DIR) && $(GIT) fetch ; )
