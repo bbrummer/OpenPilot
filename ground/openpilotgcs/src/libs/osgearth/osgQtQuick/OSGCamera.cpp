@@ -218,9 +218,13 @@ public:
             cm = NULL;
             break;
         case OSGCamera::Earth:
+        {
             qDebug() << "OSGCamera::attachManipulator - use EarthManipulator";
-            cm = new osgEarth::Util::EarthManipulator();
+            osgEarth::Util::EarthManipulator *em = new osgEarth::Util::EarthManipulator();
+            em->getSettings()->setThrowingEnabled(true);
+            cm = em;
             break;
+        }
         case OSGCamera::Track:
             qDebug() << "OSGCamera::attachManipulator - use NodeTrackerManipulator";
             if (trackNode && trackNode->node()) {
@@ -290,8 +294,11 @@ public:
     void updateCameraFOV()
     {
         // qDebug() << "OSGCamera::updateCameraFOV";
+        double fovy, ar, zn, zf;
+        camera->getProjectionMatrixAsPerspective(fovy, ar, zn ,zf);
+
         camera->setProjectionMatrixAsPerspective(
-            fieldOfView, static_cast<double>(width) / static_cast<double>(height), 1.0f, 10000.0f);
+            fieldOfView, static_cast<double>(width) / static_cast<double>(height), zn, zf);
     }
 
     void updateCameraPosition()

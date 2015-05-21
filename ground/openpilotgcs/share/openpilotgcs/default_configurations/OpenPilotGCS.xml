@@ -1030,7 +1030,7 @@
             <startSim>true</startSim>
           </data>
       </Flightgear__PCT__20HITL>
-       <XPlane__PCT__20HITL>
+       <XPlane9__PCT__20HITL>
           <configInfo>
             <locked>false</locked>
             <version>0.0.0</version>
@@ -1062,10 +1062,46 @@
             <minOutputPeriod>40</minOutputPeriod>
             <outPort>49000</outPort>
             <remoteAddress>127.0.0.1</remoteAddress>
-            <simulatorId>X-Plane</simulatorId>
+            <simulatorId>X-Plane9</simulatorId>
             <startSim>false</startSim>
           </data>
-      </XPlane__PCT__20HITL>
+      </XPlane9__PCT__20HITL>
+       <XPlane10__PCT__20HITL>
+          <configInfo>
+            <locked>false</locked>
+            <version>0.0.0</version>
+          </configInfo>
+          <data>
+            <addNoise>false</addNoise>
+            <attActCalc>false</attActCalc>
+            <attActHW>false</attActHW>
+            <attActSim>true</attActSim>
+            <attStateEnabled>true</attStateEnabled>
+            <attRawEnabled>true</attRawEnabled>
+            <attRawRate>20</attRawRate>
+            <baroAltRate>50</baroAltRate>
+            <baroAltitudeEnabled>false</baroAltitudeEnabled>
+            <binPath></binPath>
+            <dataPath></dataPath>
+            <gcsReceiverEnabled>false</gcsReceiverEnabled>
+            <gpsPosRate>100</gpsPosRate>
+            <gpsPositionEnabled>false</gpsPositionEnabled>
+            <groundTruthEnabled>true</groundTruthEnabled>
+            <groundTruthRate>100</groundTruthRate>
+            <hostAddress>0.0.0.0</hostAddress>
+            <inPort>6756</inPort>
+            <inputCommand>true</inputCommand>
+            <latitude></latitude>
+            <longitude></longitude>
+            <manualControlEnabled>true</manualControlEnabled>
+            <manualOutput>false</manualOutput>
+            <minOutputPeriod>40</minOutputPeriod>
+            <outPort>49000</outPort>
+            <remoteAddress>127.0.0.1</remoteAddress>
+            <simulatorId>X-Plane10</simulatorId>
+            <startSim>false</startSim>
+          </data>
+      </XPlane10__PCT__20HITL>
     </HITL>
     <LineardialGadget>
       <Accel__PCT__20Horizontal__PCT__20X>
@@ -1583,7 +1619,7 @@
           <latitude>39.6576</latitude>
           <longitude>19.8046</longitude>
           <altitude>90</altitude>
-          <minAmbientLight>0.8</minAmbientLight>
+          <minAmbientLight>0.50</minAmbientLight>
           <modelEnabled>false</modelEnabled>
           <modelFile>%%DATAPATH%%models/multi/test_quad/test_quad_x.3ds</modelFile>
           <modelSelectionMode>1</modelSelectionMode>
@@ -1610,7 +1646,7 @@
           <altitude>90</altitude>
           <timeMode>0</timeMode>
           <dateTime>@Variant(AAAAEAAlfhEClAez/w==)</dateTime>
-          <minAmbientLight>0.80</minAmbientLight>
+          <minAmbientLight>0.50</minAmbientLight>
           <modelEnabled>false</modelEnabled>
           <modelSelectionMode>1</modelSelectionMode>
           <modelFile>%%DATAPATH%%models/multi/test_quad/test_quad_x.3ds</modelFile>
@@ -1634,7 +1670,7 @@
           <altitude>90</altitude>
           <timeMode>0</timeMode>
           <dateTime>@Variant(AAAAEAAlfhEClAez/w==)</dateTime>
-          <minAmbientLight>0.80</minAmbientLight>
+          <minAmbientLight>0.50</minAmbientLight>
           <modelEnabled>false</modelEnabled>
           <modelSelectionMode>1</modelSelectionMode>
           <modelFile>%%DATAPATH%%models/multi/test_quad/test_quad_x.3ds</modelFile>
@@ -1658,7 +1694,7 @@
           <altitude>90</altitude>
           <timeMode>0</timeMode>
           <dateTime>@Variant(AAAAEAAlfhEClAez/w==)</dateTime>
-          <minAmbientLight>0.80</minAmbientLight>
+          <minAmbientLight>0.50</minAmbientLight>
           <modelEnabled>false</modelEnabled>
           <modelSelectionMode>1</modelSelectionMode>
           <modelFile>%%DATAPATH%%models/multi/test_quad/test_quad_x.3ds</modelFile>
@@ -1682,7 +1718,7 @@
           <altitude>90</altitude>
           <timeMode>0</timeMode>
           <dateTime>@Variant(AAAAEAAlfhEClAez/w==)</dateTime>
-          <minAmbientLight>0.80</minAmbientLight>
+          <minAmbientLight>0.50</minAmbientLight>
           <modelEnabled>true</modelEnabled>
           <modelSelectionMode>1</modelSelectionMode>
           <modelFile>%%DATAPATH%%models/multi/test_quad/test_quad_x.3ds</modelFile>
@@ -1706,7 +1742,7 @@
           <altitude>90</altitude>
           <timeMode>0</timeMode>
           <dateTime>@Variant(AAAAEAAlfhEClAez/w==)</dateTime>
-          <minAmbientLight>0.80</minAmbientLight>
+          <minAmbientLight>0.50</minAmbientLight>
           <modelEnabled>true</modelEnabled>
           <modelSelectionMode>1</modelSelectionMode>
           <modelFile>%%DATAPATH%%models/multi/test_quad/test_quad_x.3ds</modelFile>
@@ -1730,7 +1766,7 @@
           <altitude>90</altitude>
           <timeMode>0</timeMode>
           <dateTime>@Variant(AAAAEAAlfhEClAez/w==)</dateTime>
-          <minAmbientLight>0.80</minAmbientLight>
+          <minAmbientLight>0.50</minAmbientLight>
           <modelEnabled>true</modelEnabled>
           <modelSelectionMode>1</modelSelectionMode>
           <modelFile>%%DATAPATH%%models/multi/test_quad/test_quad_x.3ds</modelFile>
@@ -1754,7 +1790,7 @@
           <altitude>90</altitude>
           <timeMode>0</timeMode>
           <dateTime>@Variant(AAAAEAAlfhEClAez/w==)</dateTime>
-          <minAmbientLight>0.80</minAmbientLight>
+          <minAmbientLight>0.50</minAmbientLight>
           <modelEnabled>false</modelEnabled>
           <modelSelectionMode>1</modelSelectionMode>
           <modelFile>%%DATAPATH%%models/multi/test_quad/test_quad_x.3ds</modelFile>
@@ -2547,7 +2583,7 @@
         <side0>
           <classId>HITL</classId>
           <gadget>
-            <activeConfiguration>XPlane HITL</activeConfiguration>
+            <activeConfiguration>XPlane9 HITL</activeConfiguration>
           </gadget>
           <type>uavGadget</type>
         </side0>

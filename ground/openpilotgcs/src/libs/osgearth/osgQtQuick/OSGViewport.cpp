@@ -9,6 +9,7 @@
 #include <osg/Node>
 #include <osg/DeleteHandler>
 #include <osg/GLObjects>
+#include <osg/ApplicationUsage>
 #include <osgDB/WriteFile>
 #include <osgViewer/CompositeViewer>
 #include <osgViewer/ViewerEventHandlers>
@@ -177,6 +178,8 @@ public:
             view->getCamera()->addCullCallback(cullCallback);
         }
 
+        view->getCamera()->setSmallFeatureCullingPixelSize(-1.0f);
+
         view->setSceneData(node);
 
         return true;
@@ -234,10 +237,9 @@ public:
             start();
             // osgDB::writeNodeFile(*(h->self->sceneData()->node()), "saved.osg");
         }
-//        else {
-//            view->getCamera()->setGraphicsContext(createGraphicsContext());
-//            view->getCamera()->getGraphicsContext()->realize();
-//        }
+//        osg::ref_ptr<osg::ApplicationUsage> applicationUsage;
+//        viewer->getUsage(*applicationUsage);
+//        qDebug() << QString::fromStdString(applicationUsage->getDescription());
     }
 
     void releaseResources()
@@ -247,11 +249,11 @@ public:
             qWarning() << "OSGViewport::releaseResources - view is not valid!";
             return;
         }
-//        view->getSceneData()->releaseGLObjects(view->getCamera()->getGraphicsContext()->getState());
-//        view->getCamera()->releaseGLObjects(view->getCamera()->getGraphicsContext()->getState());
         osg::deleteAllGLObjects(view->getCamera()->getGraphicsContext()->getState()->getContextID());
-//        view->getCamera()->getGraphicsContext()->close();
-//        view->getCamera()->setGraphicsContext(NULL);
+        // view->getSceneData()->releaseGLObjects(view->getCamera()->getGraphicsContext()->getState());
+        // view->getCamera()->releaseGLObjects(view->getCamera()->getGraphicsContext()->getState());
+        // view->getCamera()->getGraphicsContext()->close();
+        // view->getCamera()->setGraphicsContext(NULL);
     }
 
     bool acceptUpdateMode(OSGViewport::UpdateMode mode)

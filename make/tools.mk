@@ -110,6 +110,7 @@ QT_SDK_DIR     := $(TOOLS_DIR)/qt-5.4.1
 UNCRUSTIFY_DIR := $(TOOLS_DIR)/uncrustify-0.60
 DOXYGEN_DIR    := $(TOOLS_DIR)/doxygen-1.8.3.1
 GTEST_DIR      := $(TOOLS_DIR)/gtest-1.6.0
+#OSG_DIR        := $(TOOLS_DIR)
 OSG_DIR        := $(BUILD_DIR)/3rdparty/install
 
 ifeq ($(UNAME), Linux)
