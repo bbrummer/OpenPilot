@@ -168,17 +168,18 @@ public:
 
         // TODO map handling should not be done here
         osgEarth::MapNode *mapNode = osgEarth::MapNode::findMapNode(node);
-        if (mapNode) {
+        if (false && mapNode) {
             qDebug() << "OSGViewport::attach - found map node" << mapNode;
             // install AutoClipPlaneCullCallback : computes near/far planes based on scene geometry
             qDebug() << "OSGViewport::attach - set AutoClipPlaneCullCallback on camera";
             // TODO will the AutoClipPlaneCullCallback be destroyed ?
             // TODO does it need to be added to the map node or to the view ?
             cullCallback = new osgEarth::Util::AutoClipPlaneCullCallback(mapNode);
-            view->getCamera()->addCullCallback(cullCallback);
+            //view->getCamera()->addCullCallback(cullCallback);
+            mapNode->addCullCallback(cullCallback);
         }
 
-        view->getCamera()->setSmallFeatureCullingPixelSize(-1.0f);
+        //view->getCamera()->setSmallFeatureCullingPixelSize(-1.0f);
 
         view->setSceneData(node);
 
@@ -198,8 +199,6 @@ public:
             view->getCamera()->removeCullCallback(cullCallback);
             cullCallback = NULL;
         }
-
-        //TODO detach sky
 
         return true;
     }
@@ -315,7 +314,10 @@ public:
 
         viewer = new osgViewer::CompositeViewer();
         viewer->setThreadingModel(osgViewer::ViewerBase::SingleThreaded);
-        // viewer->setIncrementalCompileOperation(new osgUtil::IncrementalCompileOperation());
+
+        osg::ref_ptr<osgUtil::IncrementalCompileOperation> ico = new osgUtil::IncrementalCompileOperation();
+        ico->setTargetFrameRate(30.0f);
+        viewer->setIncrementalCompileOperation(ico);
 
         // disable the default setting of viewer.done() by pressing Escape.
         viewer->setKeyEventSetsDone(0);
@@ -500,6 +502,7 @@ public:
         // osgQtQuick::openGLContextInfo(QOpenGLContext::currentContext(), "ViewportRenderer::render");
 
         if (!h->viewer.valid()) {
+            qWarning() << "ViewportRenderer::render - invalid viewport";
             return;
         }
 
