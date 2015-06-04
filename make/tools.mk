@@ -344,8 +344,9 @@ define TOOL_INSTALL_TEMPLATE
 
 $(if $(4), $(call DOWNLOAD_AND_CHECK_TEMPLATE,$(3),$(5),$(4)),$(call DOWNLOAD_TEMPLATE,$(3),$(5)))
 
-$(1)_install: $(1)_clean $(DL_DIR)/$(5) | $(TOOLS_DIR)
+$(if $(7),$(7),$(2)): $(DL_DIR)/$(5) | $(TOOLS_DIR)
 	@$(ECHO) $(MSG_EXTRACTING) $$(call toprel, $(2))
+	$(V1) [ ! -d "$(2)" ] || $(RM) -rf "$(2)"
 	$(V1) $(MKDIR) -p $$(call toprel, $(dir $(2)))
 
 	$(if $(filter $(suffix $(5)), .zip),
@@ -354,6 +355,8 @@ $(1)_install: $(1)_clean $(DL_DIR)/$(5) | $(TOOLS_DIR)
 	)
 
 	$(6)
+
+$(1)_install: $(if $(7),$(7),$(2))
 
 $(1)_clean:
 	@$(ECHO) $(MSG_CLEANING) $$(call toprel, $(2))
@@ -385,11 +388,13 @@ define WIN_QT_INSTALL_TEMPLATE
 
 $(call DOWNLOAD_TEMPLATE,$(3),$(5),$(4))
 
-qt_sdk_install: qt_sdk_clean $(DL_DIR)/$(5) | $(TOOLS_DIR)
+$(2): $(DL_DIR)/$(5) | $(TOOLS_DIR)
 	$(V1) if ! $(SEVENZIP) >/dev/null 2>&1; then \
 		$(ECHO) $(MSG_NOTICE) "Missing 7zip. Run ./make/scripts/win_sdk_install.sh [<OpenPilot tools dir>] to get it." && \
 		exit 1; \
 	fi
+	$(V1) [ ! -d "$(1)" ] || $(RM) -rf "$(1)"
+	$(V1) [ ! -d "$(2)" ] || $(RM) -rf "$(2)"
 # Explode .run file into install packages
 	@$(ECHO) $(MSG_EXTRACTING) $$(call toprel, $(1))
 	$(V1) $(MKDIR) -p $$(call toprel, $(dir $(1)))
@@ -414,6 +419,8 @@ qt_sdk_install: qt_sdk_clean $(DL_DIR)/$(5) | $(TOOLS_DIR)
 # Clean up temporary files
 	@$(ECHO) $(MSG_CLEANING) $$(call toprel, $(1))
 	$(V1) [ ! -d "$(1)" ] || $(RM) -rf "$(1)"
+
+qt_sdk_install: $(2)
 
 qt_sdk_clean:
 	@$(ECHO) $(MSG_CLEANING) $$(call toprel, $(1))
@@ -447,11 +454,13 @@ define LINUX_QT_INSTALL_TEMPLATE
 
 $(call DOWNLOAD_TEMPLATE,$(3),$(5),$(4))
 
-qt_sdk_install: qt_sdk_clean $(DL_DIR)/$(5) | $(TOOLS_DIR)
+$(2): $(DL_DIR)/$(5) | $(TOOLS_DIR)
 	$(V1) if ! $(SEVENZIP) >/dev/null 2>&1; then \
 		$(ECHO) $(MSG_NOTICE) "Please install the p7zip for your distribution. i.e.: sudo apt-get install p7zip-full" && \
 		exit 1; \
 	fi
+	$(V1) [ ! -d "$(1)" ] || $(RM) -rf "$(1)"
+	$(V1) [ ! -d "$(2)" ] || $(RM) -rf "$(2)"
 # Explode .run file into install packages
 	@$(ECHO) $(MSG_EXTRACTING) $$(call toprel, $(1))
 	$(V1) $(MKDIR) -p $$(call toprel, $(dir $(1)))
@@ -475,7 +484,9 @@ qt_sdk_install: qt_sdk_clean $(DL_DIR)/$(5) | $(TOOLS_DIR)
 # Clean up temporary files
 	@$(ECHO) $(MSG_CLEANING) $$(call toprel, $(1))
 	$(V1) [ ! -d "$(1)" ] || $(RM) -rf "$(1)"
-	
+
+qt_sdk_install: $(2)
+
 qt_sdk_clean:
 	@$(ECHO) $(MSG_CLEANING) $$(call toprel, $(1))
 	$(V1) [ ! -d "$(1)" ] || $(RM) -rf "$(1)"
@@ -508,11 +519,13 @@ define MAC_QT_INSTALL_TEMPLATE
 
 $(call DOWNLOAD_TEMPLATE,$(3),$(5),$(4))
 
-qt_sdk_install: qt_sdk_clean $(DL_DIR)/$(5) | $(TOOLS_DIR)
+$(2): $(DL_DIR)/$(5) | $(TOOLS_DIR)
 	$(V1) if ! $(SEVENZIP) >/dev/null 2>&1; then \
 		$(ECHO) $(MSG_NOTICE) "Please install the p7zip for your distribution. i.e.: brew install p7zip." && \
 		exit 1; \
 	fi
+	$(V1) [ ! -d "$(1)" ] || $(RM) -rf "$(1)"
+	$(V1) [ ! -d "$(2)" ] || $(RM) -rf "$(2)"
 # Mount .dmg file
 	$(V1) hdiutil attach -nobrowse $(DL_DIR)/$(5)
 # Explode .dmg file into install packages
@@ -547,7 +560,9 @@ qt_sdk_install: qt_sdk_clean $(DL_DIR)/$(5) | $(TOOLS_DIR)
 # Clean up temporary files
 	@$(ECHO) $(MSG_CLEANING) $$(call toprel, $(1))
 	$(V1) [ ! -d "$(1)" ] || $(RM) -rf "$(1)"
-	
+
+qt_sdk_install: $(2)
+
 qt_sdk_clean:
 	@$(ECHO) $(MSG_CLEANING) $$(call toprel, $(1))
 	$(V1) [ ! -d "$(1)" ] || $(RM) -rf "$(1)"
