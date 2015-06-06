@@ -27,7 +27,8 @@ INCLUDEPATH += \
     $(GSTREAMER_SDK_DIR)/include/glib-2.0
 
 linux {
-    INCLUDEPATH += $(GSTREAMER_SDK_DIR)/lib/i386-linux-gnu/glib-2.0/include
+    INCLUDEPATH += $(GSTREAMER_SDK_DIR)/lib/glib-2.0/include
+    INCLUDEPATH += $(GSTREAMER_SDK_DIR)/lib/gstreamer-1.0/include
 }
 
 win32 {
