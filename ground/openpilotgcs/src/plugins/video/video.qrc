@@ -26,5 +26,8 @@
 
         <file>resources/22x22/media-skip-forward.png</file>
         <file>resources/32x32/media-skip-forward.png</file>
+
+        <file>resources/22x22/utilities-terminal.png</file>
+        <file>resources/32x32/utilities-terminal.png</file>
     </qresource>
 </RCC>
