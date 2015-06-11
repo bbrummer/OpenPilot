@@ -88,9 +88,7 @@ OSG_NAME_SUFIX := -qt-$(QT_VERSION)
 #
 ################################
 
-#OSG_VERSION     := 3.2.1
-#OSG_GIT_BRANCH  := OpenSceneGraph-$(OSG_VERSION)
-OSG_VERSION     := 2705fde9e4
+OSG_VERSION     := 0b63c8ffde
 OSG_GIT_BRANCH  := $(OSG_VERSION)
 
 OSG_BASE_NAME   := osg-$(OSG_VERSION)
@@ -156,6 +154,11 @@ package_osg:
 		$(call MD5_GEN_TEMPLATE,$(notdir $(OSG_INSTALL_DIR)).tar.gz) ; \
 	)
 
+.PHONY: install_win_osg
+install_win_osg:
+	$(V1) $(CP) $(BUILD_DIR)/3rdparty/osg_dependencies/bin/*.dll $(OSG_INSTALL_DIR)/bin/
+	$(V1) $(CP) $(BUILD_DIR)/3rdparty/osg_dependencies/lib/*.dll $(OSG_INSTALL_DIR)/bin/
+
 .NOTPARALLEL:
 .PHONY: prepare_osg
 prepare_osg: clone_osg
@@ -197,9 +200,7 @@ clean_all_osg: clean_osg
 # fix Debug build
 # add option to not build the applications (in Debug mode in particular)
 
-#OSGEARTH_VERSION     := 2.6
-#OSGEARTH_GIT_BRANCH  := osgearth-$(OSGEARTH_VERSION)
-OSGEARTH_VERSION     := 75bcaa82fea
+OSGEARTH_VERSION     := 1873b3a9489
 OSGEARTH_GIT_BRANCH  := $(OSGEARTH_VERSION)
 
 OSGEARTH_BASE_NAME   := osgearth-$(OSGEARTH_VERSION)
@@ -311,12 +312,7 @@ clean_all_osgearth: clean_osgearth
 .PHONY: all_osg
 
 ifeq ($(UNAME), Windows)
-all_osg: prepare_osg prepare_osgearth osg osgearth install_osg_win package_osg
+all_osg: prepare_osg prepare_osgearth osg osgearth install_win_osg package_osg
 else
 all_osg: prepare_osg prepare_osgearth osg osgearth package_osg
 endif
-
-.PHONY: install_osg_win
-install_osg_win:
-	$(V1) $(CP) $(BUILD_DIR)/3rdparty/osg_dependencies/bin/*.dll $(OSG_INSTALL_DIR)/bin/
-	$(V1) $(CP) $(BUILD_DIR)/3rdparty/osg_dependencies/lib/*.dll $(OSG_INSTALL_DIR)/bin/
