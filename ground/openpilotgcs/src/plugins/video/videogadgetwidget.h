@@ -52,6 +52,8 @@ private slots:
     void start();
     void pause();
     void stop();
+    void console();
+
     void onStateChanged(Pipeline::State oldState, Pipeline::State newState, Pipeline::State pendingState);
 
 private:

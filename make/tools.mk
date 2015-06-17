@@ -115,6 +115,7 @@ DOXYGEN_DIR    := $(TOOLS_DIR)/doxygen-1.8.3.1
 GTEST_DIR      := $(TOOLS_DIR)/gtest-1.6.0
 
 ifeq ($(UNAME), Linux)
+    GSTREAMER_SDK_DIR := $(TOOLS_DIR)/gstreamer-1.0
 else ifeq ($(UNAME), Darwin)
 else ifeq ($(UNAME), Windows)
     MINGW_DIR    := $(QT_SDK_DIR)/Tools/$(QT_SDK_ARCH)

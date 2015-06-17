@@ -143,10 +143,31 @@
          </property>
         </spacer>
        </item>
+       <item>
+        <widget class="QPushButton" name="consoleButton">
+         <property name="mouseTracking">
+          <bool>true</bool>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+         <property name="icon">
+          <iconset>
+           <normaloff>:/video/resources/22x22/utilities-terminal.png</normaloff>
+           <normalon>:/video/resources/22x22/utilities-terminal.png</normalon>:/video/resources/22x22/utilities-terminal.png</iconset>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>22</width>
+           <height>22</height>
+          </size>
+         </property>
+        </widget>
+       </item>
       </layout>
      </item>
      <item>
-      <widget class="QTextBrowser" name="textBrowser">
+      <widget class="QTextBrowser" name="consoleTextBrowser">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
          <horstretch>0</horstretch>

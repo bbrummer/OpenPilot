@@ -41,7 +41,7 @@ VideoGadgetWidget::VideoGadgetWidget(QWidget *parent) :
     m_ui = new Ui_Form();
     m_ui->setupUi(this);
 
-    // m_ui->textBrowser->hide();
+    m_ui->consoleTextBrowser->setVisible(false);
 
     connect(videoWidget(), &VideoWidget::stateChanged, this, &VideoGadgetWidget::onStateChanged);
     connect(videoWidget(), &VideoWidget::message, this, &VideoGadgetWidget::msg);
@@ -49,6 +49,8 @@ VideoGadgetWidget::VideoGadgetWidget(QWidget *parent) :
     connect(m_ui->startButton, &QPushButton::clicked, this, &VideoGadgetWidget::start);
     connect(m_ui->pauseButton, &QPushButton::clicked, this, &VideoGadgetWidget::pause);
     connect(m_ui->stopButton, &QPushButton::clicked, this, &VideoGadgetWidget::stop);
+
+    connect(m_ui->consoleButton, &QPushButton::clicked, this, &VideoGadgetWidget::console);
 
     onStateChanged(Pipeline::Null, Pipeline::Null, Pipeline::Null);
 }
@@ -96,41 +98,56 @@ void VideoGadgetWidget::stop()
     videoWidget()->stop();
 }
 
+void VideoGadgetWidget::console()
+{
+    m_ui->consoleTextBrowser->setVisible(!m_ui->consoleTextBrowser->isVisible());
+}
+
 void VideoGadgetWidget::onStateChanged(Pipeline::State oldState, Pipeline::State newState, Pipeline::State pendingState)
 {
     msg(QString("state changed: ") + VideoWidget::name(newState));
+    m_ui->startButton->setEnabled(true);
+    m_ui->pauseButton->setEnabled(true);
+    m_ui->stopButton->setEnabled(true);
+
+    m_ui->startButton->setVisible(false);
+    m_ui->pauseButton->setVisible(false);
+    m_ui->stopButton->setVisible(false);
     switch (newState) {
     case Pipeline::Ready:
-        m_ui->pauseButton->setVisible(false);
-
-        m_ui->startButton->setEnabled(true);
+        // start & stop (disabled)
         m_ui->startButton->setVisible(true);
-
         m_ui->stopButton->setEnabled(false);
+        m_ui->stopButton->setVisible(true);
         break;
     case Pipeline::Paused:
-        m_ui->pauseButton->setVisible(false);
-
-        m_ui->startButton->setEnabled(pendingState != Pipeline::Playing);
-        m_ui->startButton->setVisible(true);
-
-        m_ui->stopButton->setEnabled(true);
+        if (pendingState == Pipeline::Playing) {
+            // pause (disabled) & stop
+            m_ui->pauseButton->setEnabled(false);
+            m_ui->pauseButton->setVisible(true);
+            m_ui->stopButton->setVisible(true);
+        }
+        else if (pendingState == Pipeline::Ready) {
+            // start & stop (disabled)
+            m_ui->startButton->setVisible(true);
+            m_ui->stopButton->setEnabled(false);
+            m_ui->stopButton->setVisible(true);
+        }
+        else {
+            // start & stop
+            m_ui->startButton->setVisible(true);
+            m_ui->stopButton->setVisible(true);
+        }
         break;
     case Pipeline::Playing:
-        m_ui->startButton->setVisible(false);
-
-        m_ui->pauseButton->setEnabled(true);
+        // pause & stop
         m_ui->pauseButton->setVisible(true);
-
-        m_ui->stopButton->setEnabled(true);
+        m_ui->stopButton->setVisible(true);
         break;
     default:
-        m_ui->pauseButton->setVisible(false);
-
-        m_ui->startButton->setEnabled(true);
+        // start & stop
         m_ui->startButton->setVisible(true);
-
-        m_ui->stopButton->setEnabled(false);
+        m_ui->stopButton->setVisible(true);
         break;
     }
 }
@@ -138,7 +155,7 @@ void VideoGadgetWidget::onStateChanged(Pipeline::State oldState, Pipeline::State
 void VideoGadgetWidget::msg(const QString &str)
 {
     if (m_ui) {
-        m_ui->textBrowser->append(str);
+        m_ui->consoleTextBrowser->append(str);
     }
 }
 
