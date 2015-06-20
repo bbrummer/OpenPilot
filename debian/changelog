@@ -1,0 +1,5 @@
+openpilot (999) osgearth; urgency=low
+
+  * Release from upstream Git repository
+
+ -- James Duley <james@openpilot.org>  Sat, 20 Jun 2015 19:18:34 +0200
