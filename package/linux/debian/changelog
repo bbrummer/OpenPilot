@@ -1,4 +1,4 @@
-openpilot (<VERSION>) <DIST>; urgency=low
+openpilot 999 osgearth; urgency=low
 
   * Release from upstream Git repository
 
