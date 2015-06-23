@@ -334,7 +334,7 @@ endef
 #  $(4) = tool distribution MD5 URL
 #  $(5) = tool distribution file
 #  $(6) = optional extra build recipes template
-#  $(7) = optional extra clean recipes template
+#  $(7) = optional tool dest directory if different from $(2)
 #
 ##############################
 
@@ -357,9 +357,7 @@ $(1)_install: $(1)_clean $(DL_DIR)/$(5) | $(TOOLS_DIR)
 
 $(1)_clean:
 	@$(ECHO) $(MSG_CLEANING) $$(call toprel, $(2))
-	$(V1) [ ! -d "$(2)" ] || $(RM) -rf "$(2)"
-
-	$(7)
+	$(V1) [ ! -d "$(if $(7),$(7),$(2))" ] || $(RM) -rf "$(if $(7),$(7),$(2))"
 
 $(1)_distclean:
 	@$(ECHO) $(MSG_DISTCLEANING) $$(call toprel, $(DL_DIR)/$(5))
@@ -378,7 +376,6 @@ endef
 #  $(5) = tool distribution file
 #  $(6) = QT architecture
 #  $(7) = optional extra build recipes template
-#  $(8) = optional extra clean recipes template
 #
 ##############################
 
@@ -424,8 +421,6 @@ qt_sdk_clean:
 	@$(ECHO) $(MSG_CLEANING) $$(call toprel, "$(2)")
 	$(V1) [ ! -d "$(2)" ] || $(RM) -rf "$(2)"
 
-	$(8)
-
 qt_sdk_distclean:
 	@$(ECHO) $(MSG_DISTCLEANING) $$(call toprel, $(DL_DIR)/$(5))
 	$(V1) [ ! -f "$(DL_DIR)/$(5)" ]     || $(RM) "$(DL_DIR)/$(5)"
@@ -443,7 +438,6 @@ endef
 #  $(5) = tool distribution file
 #  $(6) = QT architecture
 #  $(7) = optional extra build recipes template
-#  $(8) = optional extra clean recipes template
 #
 ##############################
 
@@ -488,8 +482,6 @@ qt_sdk_clean:
 	@$(ECHO) $(MSG_CLEANING) $$(call toprel, "$(2)")
 	$(V1) [ ! -d "$(2)" ] || $(RM) -rf "$(2)"
 
-	$(8)
-
 qt_sdk_distclean:
 	@$(ECHO) $(MSG_DISTCLEANING) $$(call toprel, $(DL_DIR)/$(5))
 	$(V1) [ ! -f "$(DL_DIR)/$(5)" ]     || $(RM) "$(DL_DIR)/$(5)"
@@ -507,7 +499,6 @@ endef
 #  $(5) = tool distribution file
 #  $(6) = QT architecture
 #  $(7) = optional extra build recipes template
-#  $(8) = optional extra clean recipes template
 #
 ##############################
 
@@ -562,8 +553,6 @@ qt_sdk_clean:
 	$(V1) [ ! -d "$(1)" ] || $(RM) -rf "$(1)"
 	@$(ECHO) $(MSG_CLEANING) $$(call toprel, "$(2)")
 	$(V1) [ ! -d "$(2)" ] || $(RM) -rf "$(2)"
-
-	$(8)
 
 qt_sdk_distclean:
 	@$(ECHO) $(MSG_DISTCLEANING) $$(call toprel, $(DL_DIR)/$(5))
@@ -857,11 +846,7 @@ define UNCRUSTIFY_BUILD_TEMPLATE
 	-$(V1) [ ! -d "$(UNCRUSTIFY_BUILD_DIR)" ] || $(RM) -rf "$(UNCRUSTIFY_BUILD_DIR)"
 endef
 
-define UNCRUSTIFY_CLEAN_TEMPLATE
-	-$(V1) [ ! -d "$(UNCRUSTIFY_DIR)" ] || $(RM) -rf "$(UNCRUSTIFY_DIR)"
-endef
-
-$(eval $(call TOOL_INSTALL_TEMPLATE,uncrustify,$(UNCRUSTIFY_BUILD_DIR),$(UNCRUSTIFY_URL),,$(notdir $(UNCRUSTIFY_URL)),$(UNCRUSTIFY_BUILD_TEMPLATE),$(UNCRUSTIFY_CLEAN_TEMPLATE)))
+$(eval $(call TOOL_INSTALL_TEMPLATE,uncrustify,$(UNCRUSTIFY_BUILD_DIR),$(UNCRUSTIFY_URL),,$(notdir $(UNCRUSTIFY_URL)),$(UNCRUSTIFY_BUILD_TEMPLATE),$(UNCRUSTIFY_DIR)))
 
 endif
 
