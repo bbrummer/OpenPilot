@@ -21,5 +21,6 @@ endif
 	  PACKAGE_DIR="$(PACKAGE_DIR)" \
 	  PACKAGE_NAME="$(PACKAGE_NAME)" \
 	  PACKAGE_SEP="$(PACKAGE_SEP)" \
+      PACKAGE_GCS_BIG_NAME="$(GCS_BIG_NAME)" \
 	  "$(ROOT_DIR)/package/osx/package" \
 	)

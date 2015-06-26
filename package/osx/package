@@ -1,14 +1,13 @@
 #!/bin/bash
 
 # the following environment variables must be set
-: ${ROOT_DIR?} ${BUILD_DIR?} ${PACKAGE_LBL?} ${PACKAGE_DIR?} ${PACKAGE_NAME?} ${PACKAGE_SEP?}
+: ${ROOT_DIR?} ${BUILD_DIR?} ${PACKAGE_LBL?} ${PACKAGE_DIR?} ${PACKAGE_NAME?} ${PACKAGE_SEP?} ${PACKAGE_GCS_BIG_NAME?}
 
 # more variables
-APP_PATH="${BUILD_DIR}/${GCS_SMALL_NAME}_release/${GCS_BIG_NAME}.app"
+APP_PATH="${BUILD_DIR}/${GCS_SMALL_NAME}_release/${PACKAGE_GCS_BIG_NAME}.app"
 OUT_FILE="${PACKAGE_DIR}/../${PACKAGE_NAME}${PACKAGE_SEP}${PACKAGE_LBL}${PACKAGE_SEP}osx.dmg"
 
 SRC_DIR="${PACKAGE_DIR}/src"
-APPLICATION_NAME="OpenPilot GCS.app"
 VOL_NAME="OpenPilot GCS"
 # cleanup previous build
 rm -rf "${SRC_DIR}"
@@ -31,7 +30,7 @@ cp "${ROOT_DIR}/LICENSE.txt" "${SRC_DIR}/Docs/"
 cp "${ROOT_DIR}/GPLv3.txt" "${SRC_DIR}/Docs/"
 
 "${ROOT_DIR}/package/osx/libraries" \
-    "${SRC_DIR}/${GCS_BIG_NAME}.app" || exit 1
+    "${SRC_DIR}/${PACKAGE_GCS_BIG_NAME}.app" || exit 1
 
 "${ROOT_DIR}/package/osx/create-dmg/create-dmg" \
 --volname "${VOL_NAME}" \
@@ -44,9 +43,9 @@ cp "${ROOT_DIR}/GPLv3.txt" "${SRC_DIR}/Docs/"
 --icon "Docs" 250 380 \
 --icon "WHATSNEW.txt" 400 380 \
 --icon "Utilities" 500 380 \
---icon "${APPLICATION_NAME}" 150 215 \
---hide-extension "${APPLICATION_NAME}" \
 --app-drop-link 450 215 \
+--icon "${PACKAGE_GCS_BIG_NAME}.app" 150 215 \
+--hide-extension "${PACKAGE_GCS_BIG_NAME}.app" \
 --no-internet-enable \
 "${OUT_FILE}" \
 "${SRC_DIR}"

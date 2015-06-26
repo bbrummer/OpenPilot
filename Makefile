@@ -730,7 +730,7 @@ PACKAGE_LBL       := $(shell $(VERSION_INFO) --format=\$${LABEL})
 PACKAGE_NAME      := $(subst $(SPACE),,$(OP_BIG_NAME))
 PACKAGE_SEP       := -
 PACKAGE_FULL_NAME := $(PACKAGE_NAME)$(PACKAGE_SEP)$(PACKAGE_LBL)
-
+PACKAGE_GCS_BIG_NAME := $(PACKAGE_FULL_NAME)
 include $(ROOT_DIR)/package/$(UNAME).mk
 
 # Source distribution is never dirty because it uses git archive
