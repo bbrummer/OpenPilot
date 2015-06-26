@@ -174,6 +174,22 @@ uavobjects_%:  uavobjgenerator
 	    $(UAVOBJGENERATOR) -$* $(UAVOBJ_XML_DIR) $(ROOT_DIR) ; \
 	)
 
+OBJECTCOUNT := $(shell find $(ROOT_DIR)/ground/pyuavtalk/openpilot/uavobjects/ -name '*.py' | wc -l)
+uavobjects_python_install: 
+	$(V1) if [ $(OBJECTCOUNT) -gt 2 ]; then echo "UAVObjects already exist"; else make uavobjects_python; fi
+	$(V1) mkdir -p $(ROOT_DIR)/ground/pyuavtalk/openpilot/uavobjects/
+	$(V1) ( touch $(ROOT_DIR)/ground/pyuavtalk/openpilot/uavobjects/__init__.py )
+	$(V1) ( cp $(UAVOBJ_OUT_DIR)/python/* $(ROOT_DIR)/ground/pyuavtalk/openpilot/uavobjects/ )
+	$(V1) ( cd $(ROOT_DIR)/ground/pyuavtalk/ && sudo python setup.py build && sudo python setup.py install)
+
+uavobjects_python_clean: 
+	@$(ECHO) " CLEAN      $(call toprel, $(ROOT_DIR)/ground/pyuavtalk/openpilot/uavobjects/)"
+	$(V1) [ ! -d "$(ROOT_DIR)/ground/pyuavtalk/openpilot/uavobjects/" ] || $(RM) -r "$(ROOT_DIR)/ground/pyuavtalk/openpilot/uavobjects/"
+	@$(ECHO) " CLEAN      $(call toprel, $(ROOT_DIR)/ground/pyuavtalk/build/)"
+	$(V1) [ ! -d "$(ROOT_DIR)/ground/pyuavtalk/build/" ] || sudo $(RM) -r "$(ROOT_DIR)/ground/pyuavtalk/build/"
+	@$(ECHO) " CLEAN      $(call toprel, $(UAVOBJ_OUT_DIR)/python/)"
+	$(V1) [ ! -d "$(UAVOBJ_OUT_DIR)/python/" ] || $(RM) -r "$(UAVOBJ_OUT_DIR)/python/"
+
 uavobjects_test:  uavobjgenerator
 	$(V1) $(UAVOBJGENERATOR) -v $(UAVOBJ_XML_DIR) $(ROOT_DIR)
 
@@ -956,6 +972,10 @@ help:
 	@$(ECHO) "     uavobjects_test      - Parse xml-files - check for valid, duplicate ObjId's, ..."
 	@$(ECHO) "     uavobjects_<group>   - Generate source files from a subset of the UAVObject definition XML files"
 	@$(ECHO) "                            Supported groups are ($(UAVOBJ_TARGETS))"
+	@$(ECHO) "     uavobjects_python_install"
+	@$(ECHO) "     			    - Install generated python files as eggs for use with example Python scripts"
+	@$(ECHO) "     uavobjects_python_clean"
+	@$(ECHO) "     			    - Remove generated python UAVOs from build directory & pyuavtalk folder"
 	@$(ECHO)
 	@$(ECHO) "   [Packaging]"
 	@$(ECHO) "     package              - Build and package the OpenPilot platform-dependent package (no clean)"
