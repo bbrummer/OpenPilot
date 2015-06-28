@@ -1225,6 +1225,7 @@ margin-top: -1px;
                              <brush brushstyle="SolidPattern">
                               <color alpha="255">
                                <red>255</red>
+
                                <green>255</green>
                                <blue>255</blue>
                               </color>
@@ -1535,6 +1536,7 @@ border-radius: 5;</string>
                           </sizepolicy>
                          </property>
                          <property name="minimumSize">
+
                           <size>
                            <width>0</width>
                            <height>20</height>
@@ -11539,6 +11541,7 @@ border-radius: 5;</string>
                               </gradientstop>
                               <gradientstop position="0.786070000000000">
                                <color alpha="255">
+
                                 <red>36</red>
                                 <green>36</green>
                                 <blue>36</blue>
@@ -16442,6 +16445,7 @@ border-radius: 5;</string>
                             </brush>
                            </colorrole>
                            <colorrole role="BrightText">
+
                             <brush brushstyle="SolidPattern">
                              <color alpha="255">
                               <red>255</red>
@@ -21086,7 +21090,7 @@ border-radius: 5;</string>
                          </size>
                         </property>
                         <property name="toolTip">
-                         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Multi-copters should probably use 80% to 90% to leave some headroom for stabilization. CP helis can set this to 100%.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;You can use this to reduce the full thrust you get when you bank 90 degrees. Most people will want to leave it at 100%.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                         </property>
                         <property name="alignment">
                          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -25088,6 +25092,7 @@ font:bold;</string>
                           </color>
                          </gradientstop>
                         </gradient>
+
                        </brush>
                       </colorrole>
                       <colorrole role="Window">
